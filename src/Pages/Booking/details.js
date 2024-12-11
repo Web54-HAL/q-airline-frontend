@@ -1,29 +1,92 @@
 import * as React from "react";
-import CssBaseline from "@mui/material/CssBaseline";
-import AppBar from "@mui/material/AppBar";
+import { useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import Toolbar from "@mui/material/Toolbar";
 import Paper from "@mui/material/Paper";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Avatar, TextField } from "@mui/material";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Image from "./1.jpg";
+import { useState } from "react";
+import axios from "axios";
 import "../../../src/color.css";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 const theme = createTheme();
 export default function Booking() {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  //////////////////
+  function convertToDateTimeLocal(isoString) {
+    try {
+      // Chuyển đổi chuỗi thành đối tượng Date
+      const dateObject = new Date(isoString);
+
+      if (isNaN(dateObject.getTime())) {
+        throw new Error("Invalid ISO string");
+      }
+      const year = dateObject.getFullYear();
+      const month = String(dateObject.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObject.getDate()).padStart(2, "0");
+      const hours = String(dateObject.getHours()).padStart(2, "0");
+      const minutes = String(dateObject.getMinutes()).padStart(2, "0");
+
+      // Trả về định dạng 'YYYY-MM-DDTHH:mm'
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch (error) {
+      console.error("Error converting ISO string:", error.message);
+      return null;
+    }
+  }
+
+  /////////////////
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+  // Hàm đặt vé
+  const handleSubmit = async () => {
+    const bookingData = {
+      ...formData,
+    };
+
+    try {
+      const response = await axios.post(
+        "/",
+        bookingData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt")}`, // Thêm JWT vào header
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSnackbarMessage("Booking successful!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage("Booking failed, please try again later.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  // Đóng snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+  ///////////////////////////////////
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const [formData, setFormData] = useState({
     flight_id: "",
     booking_date: "",
@@ -32,45 +95,29 @@ export default function Booking() {
     infant_count: 0,
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const [activeStep, setActiveStep] = React.useState(0);
-  const {
-    type,
-    from,
-    to,
-    departure,
-    seat_count,
-    flight_id,
-    customer_id,
-    booking_date,
-  } = useParams();
+  const flightId = queryParams.get("flightId");
+  const from = queryParams.get("from");
+  const to = queryParams.get("to");
+  const departureTime = convertToDateTimeLocal(
+    queryParams.get("departureTime")
+  );
+  const bookingDate = convertToDateTimeLocal(queryParams.get("bookingDate"));
   const flightdetails = [
-    { name: "Type", detail: type },
     { name: "From", detail: from },
     { name: "To", detail: to },
-    { name: "Departure Time", detail: departure },
-    { name: "Seat Count ", detail: seat_count },
+    { name: "Departure Time", detail: departureTime },
   ];
-
-  const handleSubmit = () => {};
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{bgcolor:"var(--primary-color)", m:"0", p:"0"}}>
+      <Box sx={{ bgcolor: "var(--primary-color)" }}>
         <Avatar
           sx={{
             width: 120,
             height: 120,
             m: "0px 30px",
             position: "relative",
-            top:"15px",
+            top: "15px",
             bgcolor: "var(--primary-color)",
           }}
         >
@@ -81,7 +128,7 @@ export default function Booking() {
             <Paper
               variant="outlined"
               sx={{
-                height: "70%",
+                height: "60%",
                 width: "100%",
                 p: 3,
                 boxShadow: 2,
@@ -141,7 +188,8 @@ export default function Booking() {
               variant="outlined"
               sx={{
                 height: "100%",
-                p: 10,
+                width: "95%",
+                p: 5,
                 boxShadow: 2,
                 borderRadius: "8px",
                 background: "var(--background-color)", // Gradient cam nhạt
@@ -169,7 +217,7 @@ export default function Booking() {
                   fullWidth
                   label="Customer ID"
                   name="customer_id"
-                  value={formData.flight_id}
+                  value={formData.flightId}
                   onChange={handleChange}
                   InputProps={{
                     readOnly: true,
@@ -190,7 +238,7 @@ export default function Booking() {
                   fullWidth
                   label="Flight ID"
                   name="flight_id"
-                  value={flight_id}
+                  value={flightId}
                   onChange={handleChange}
                   InputProps={{
                     readOnly: true,
@@ -212,7 +260,7 @@ export default function Booking() {
                   label="Booking Date"
                   name="booking_date"
                   type="datetime-local"
-                  value={booking_date}
+                  value={bookingDate}
                   onChange={handleChange}
                   InputProps={{
                     readOnly: true,
@@ -316,6 +364,21 @@ export default function Booking() {
                 </Button>
               </Box>
             </Paper>
+            {/* Hiển thị Snackbar */}
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={4000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <Alert
+                onClose={handleCloseSnackbar}
+                severity={snackbarSeverity}
+                sx={{ width: "100%" }}
+              >
+                {snackbarMessage}
+              </Alert>
+            </Snackbar>
           </Grid>
         </Grid>
         <Container
