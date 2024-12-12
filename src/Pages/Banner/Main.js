@@ -9,7 +9,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import Image from "../SignUp_Page/1.jpg";
 
-export default function Carousel() {
+export default function Slider() {
   const [slides, setSlides] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedMarkdown, setSelectedMarkdown] = useState("");

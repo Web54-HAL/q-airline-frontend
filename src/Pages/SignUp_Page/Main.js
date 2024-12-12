@@ -96,7 +96,7 @@ export default function SignUp() {
             backgroundImage: `url(${Image})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-
+height:"90vh",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
-  Box,
-  Typography,
-  Grid,
-  Avatar,
-  Card,
-  CardContent,
   Table,
   TableBody,
   TableCell,
@@ -14,239 +7,189 @@ import {
   TableHead,
   TableRow,
   Paper,
+  TextField,
   Button,
+  Box,
+  Typography,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
   Snackbar,
+  Alert,
 } from "@mui/material";
+import { styled } from "@mui/system";
+import axios from "axios";
 
-import "../../../src/color.css";
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  fontWeight: "bold",
+}));
 
-const BookingList = () => {
-  const [bookings, setBookings] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState(null);
+export default function ProductTable() {
+  const [products, setProducts] = useState([]);
+  const [newProduct, setNewProduct] = useState({
+    image: "",
+    name: "",
+    updated_at: "",
+    markdown: "",
+  });
+  const [openDialog, setOpenDialog] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Trạng thái Snackbar
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Thông báo hiển thị
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Mức độ thông báo (success, error, etc.)
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/bookings");
-      setBookings(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  // Fetch data from the local JSON file
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/admin");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
 
-  const handleOpenDialog = (bookingId) => {
-    setSelectedBooking(bookingId); // Lưu ID booking để hủy
-    setOpen(true); // Mở hộp thoại
-  };
-
-  const handleCloseDialog = () => {
-    setOpen(false); // Đóng hộp thoại
-    setSelectedBooking(null);
-  };
-
-  const handleConfirmCancel = async () => {
-    try {
-      // Gửi yêu cầu tới API để xóa booking
-      await axios.delete(`http://localhost:5000/bookings/${selectedBooking}`);
-
-      setSnackbarOpen(true); 
-      setOpen(false); 
-      fetchData(); 
-    } catch (error) {
-      console.error("Error cancelling booking:", error);
-    }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false); 
-  };
-
-  React.useEffect(() => {
-    fetchData();
+    fetchProducts();
   }, []);
 
-  // Hàm xử lý hủy vé có phản hồi
-  //   const handleCancelBooking = async (bookingId, isCancelable) => {
-  //     try {
-  //       // Gọi API patch để hủy vé
-  //       const response = await axios.delete(
-  //         // `http://localhost:5000/bookings/${bookingId}`,
-  //         {}
-  //       );
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewProduct((prev) => ({ ...prev, [name]: value }));
+  };
 
-  //       if (response.status === 200) {
-  //         alert("Booking cancelled successfully.");
-  //         // Cập nhật danh sách booking sau khi hủy thành công
-  //         setBookings((prev) =>
-  //           prev.map((booking) =>
-  //             booking.id === bookingId ? { ...booking } : booking
-  //           )
-  //         );
-  //       }
-  //     } catch (error) {
-  //       console.error("Error cancelling booking:", error);
-  //       alert("An error occurred while cancelling the booking.");
-  //     }
-  //   };
+  const handleAddProduct = async () => {
+    if (!newProduct.image || !newProduct.name) {
+      setSnackbarMessage("Vui lòng điền đầy đủ thông tin.");
+      setSnackbarSeverity("warning");
+      setSnackbarOpen(true); // Hiển thị Snackbar
+    } else {
+      try {
+        const response = await axios.post("http://localhost:5000/admin", {
+          ...newProduct,
+          created_at: new Date().toISOString(),
+          updated_at: newProduct.updated_at || new Date().toISOString(),
+        });
+  
+        setProducts((prev) => [...prev, response.data]);
+  
+        setNewProduct({ image: "", name: "", updated_at: "", markdown: "" });
+        setOpenDialog(false);
+  
+        setSnackbarMessage("Sản phẩm đã được thêm thành công!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true); // Hiển thị Snackbar
+      } catch (error) {
+        console.error("Error adding product:", error);
+        setSnackbarMessage("Đã xảy ra lỗi khi thêm sản phẩm. Vui lòng thử lại.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true); // Hiển thị Snackbar
+      }
+    }
+  };
+  
 
-  // if (!userData) {
-  //   return <Typography>Loading...</Typography>;
-  // }
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbarOpen(false); // Đóng Snackbar
+  };
 
   return (
-    <Box sx={{ padding: 4, bgcolor: "var(--primary-color)", height: "100vh" }}>
-      <Grid container spacing={2}>
-        {/* Thông tin người dùng */}
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent sx={{ bgcolor: "var(--background-color)" }}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <Avatar
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      bgcolor: "var(--primary-color)",
-                    }}
-                  />
-                </Grid>
-                <Grid item>
-                  {/* <Typography variant="h6">{userData.name}</Typography>
-                  <Typography variant="body2">{userData.phone}</Typography>
-                  <Typography variant="body2">{userData.email}</Typography> */}
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Tổng quan booking */}
-        <Grid item xs={12} md={8}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Card sx={{ bgcolor: "var(--background-color)" }}>
-                <CardContent b>
-                  <Typography variant="h6" align="center">
-                    Total Bookings
-                  </Typography>
-                  <Typography variant="h4" align="center">
-                    {bookings.length}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={6}>
-              <Card sx={{ bgcolor: "var(--background-color)" }}>
-                <CardContent>
-                  <Typography variant="h6" align="center">
-                    Pending Bookings
-                  </Typography>
-                  <Typography variant="h4" align="center">
-                    {
-                      bookings.filter(
-                        (booking) => new Date(booking.booking_date) > new Date()
-                      ).length
-                    }
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-
-      {/* Bảng booking */}
-      <Box sx={{ marginTop: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          My Bookings
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead sx={{ bgcolor: "var(--background-color)" }}>
-              <TableRow>
-                <TableCell>Sl. No.</TableCell>
-                <TableCell>Booking ID</TableCell>
-                <TableCell>Booking Type</TableCell>
-                <TableCell>Booking Date</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Cancel</TableCell>
+    <Box sx={{ padding: 4 }}>
+      <Typography variant="h5" sx={{ marginBottom: 2, textAlign: "center" }}>
+        Promotion List
+      </Typography>
+      <Button
+        variant="contained"
+        sx={{ marginBottom: 2, float: "right" }}
+        onClick={() => setOpenDialog(true)}
+      >
+        Thêm sản phẩm
+      </Button>
+      <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Ảnh</StyledTableCell>
+              <StyledTableCell>Tên sản phẩm</StyledTableCell>
+              <StyledTableCell>Ngày cập nhật</StyledTableCell>
+              <StyledTableCell>Ngày tạo</StyledTableCell>
+              <StyledTableCell>Markdown</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {products.map((product, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <img src={product.image} alt={product.name} width="80" />
+                </TableCell>
+                <TableCell>{product.name}</TableCell>
+                <TableCell>{product.updated_at}</TableCell>
+                <TableCell>{product.created_at}</TableCell>
+                <TableCell>{product.markdown || "N/A"}</TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookings.map((booking, index) => {
-                const isCancelable =
-                  booking.booking_date > new Date().toISOString(); // Check thời hạn hủy vé
-                return (
-                  <TableRow key={booking.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{booking.id}</TableCell>
-                    <TableCell>{booking.type}</TableCell>
-                    <TableCell>{booking.booking_date}</TableCell>
-                    <TableCell>
-                      {isCancelable ? (
-                        <Typography color="green">Pending</Typography>
-                      ) : (
-                        <Typography color="red">Completed</Typography>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        disabled={!isCancelable}
-                        onClick={() =>
-                          handleOpenDialog(booking.id, isCancelable)
-                        }
-                        sx={{
-                          display: !isCancelable ? "none" : "block",
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Dialog
-                        open={open}
-                        onClose={handleCloseDialog}
-                        BackdropProps={{
-                          style: { display: "none" }, // Ẩn backdrop
-                        }}
-                      >
-                        <DialogTitle>Confirm Cancellation</DialogTitle>
-                        <DialogContent>
-                          Do you want to cancel this ticket?
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={handleCloseDialog} color="primary">
-                            No
-                          </Button>
-                          <Button
-                            onClick={handleConfirmCancel}
-                            color="secondary"
-                          >
-                            Yes
-                          </Button>
-                        </DialogActions>
-                      </Dialog>
-                      <Snackbar
-                        open={snackbarOpen}
-                        autoHideDuration={3000} // Tự động đóng sau 3 giây
-                        onClose={handleCloseSnackbar}
-                        message="Booking cancelled successfully!"
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Thêm sản phẩm</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+            <TextField
+              label="Đường dẫn ảnh"
+              name="image"
+              value={newProduct.image}
+              onChange={handleInputChange}
+              fullWidth
+              placeholder="Nhập đường dẫn ảnh"
+              required
+            />
+            <TextField
+              label="Tên sản phẩm"
+              name="name"
+              value={newProduct.name}
+              onChange={handleInputChange}
+              fullWidth
+              placeholder="Nhập tên sản phẩm"
+              required
+            />
+            <TextField
+              label="Ngày cập nhật"
+              name="updated_at"
+              value={newProduct.updated_at}
+              onChange={handleInputChange}
+              fullWidth
+              placeholder="Tự động thêm nếu không nhập (dd/mm/yyyy hh:mm)"
+            />
+            <TextField
+              label="Markdown"
+              name="markdown"
+              value={newProduct.markdown}
+              onChange={handleInputChange}
+              fullWidth
+              placeholder="Nội dung Markdown (tùy chọn)"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Hủy</Button>
+          <Button variant="contained" onClick={handleAddProduct}>
+            Lưu sản phẩm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
-};
-
-export default BookingList;
+}
