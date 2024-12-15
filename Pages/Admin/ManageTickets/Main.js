@@ -74,7 +74,7 @@ const TicketSearch = () => {
         }
       });
 
-      const response = await axios.post(
+      const response = await axios.get(
         `http://localhost:3000/tickets/search?${params.toString()}`
       );
 

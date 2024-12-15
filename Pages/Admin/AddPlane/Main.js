@@ -29,12 +29,12 @@ export default function AddPlane() {
     customer_seat_count: '',
   });
 
-  const [fullInfromation, setFullInfromation] = useState('');
   const [planes, setPlanes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openSnackbar, setOpenSnackbar] = useState(false); // State to control Snackbar visibility
-  const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar message
-
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [fullInformation, setFullInformation] = useState('');
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -42,54 +42,106 @@ export default function AddPlane() {
       [name]: value,
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Kiểm tra nếu các trường bị bỏ trống
-    if (!formData.manufacturer || !formData.customer_seat_count) {
-      setFullInfromation('*All fields are required.');
+  
+    // Lấy token từ localStorage
+    const token = localStorage.getItem("access_token");
+  
+    // Kiểm tra token
+    if (!token) {
+      setSnackbarMessage("Authentication required. Please log in.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
       return;
     }
-
-    // Reset lỗi
-    setFullInfromation('');
-
+  
+    // Validation dữ liệu đầu vào
+    if (!formData.manufacturer || !formData.customer_seat_count) {
+      setFullInformation('*All fields are required.');
+      setSnackbarMessage('*All fields are required.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+      return;
+    }
+  
+    if (Number(formData.customer_seat_count) <= 0) {
+      setFullInformation('Seat count must be greater than 0.');
+      setSnackbarMessage('Seat count must be greater than 0.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+      return;
+    }
+  
+    // Reset thông báo lỗi
+    setFullInformation('');
+    console.log("Form data being submitted:", formData);
+  
     try {
-      const response = await axios.post('http://localhost:5001/planes', formData);
-      console.log('Data added successfully:', response.data);
+      // Gửi request POST để thêm máy bay
+      const response = await axios.post(
+        'http://localhost:3000/planes',
+        {
+          manufacturer: formData.manufacturer,
+          customer_seat_count: Number(formData.customer_seat_count), // Đảm bảo seat count là số
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Đảm bảo định dạng JSON
+          },
+        }
+      );
+  
+      // Xử lý thành công
+      console.log('Plane added successfully:', response.data);
+  
+      // Hiển thị thông báo thành công
       setSnackbarMessage('Plane added successfully!');
-      setOpenSnackbar(true); // Show Snackbar when the plane is added
-
-      // Thêm chuyến bay mới vào danh sách planes mà không cần gọi lại API
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+  
+      // Cập nhật danh sách planes mà không cần gọi lại API
       setPlanes((prevPlanes) => [...prevPlanes, response.data]);
-
+  
       // Reset form
       setFormData({
         manufacturer: '',
         customer_seat_count: '',
       });
     } catch (error) {
-      console.error('Error adding plane:', error);
-      setSnackbarMessage('Failed to add plane.');
-      setOpenSnackbar(true); // Show Snackbar if an error occurs
+      // Xử lý lỗi khi thêm máy bay
+      const errorMessage = error.response?.data?.message || 'Failed to add plane. Please try again.';
+      console.error('Error adding plane:', errorMessage);
+  
+      // Hiển thị thông báo lỗi
+      setSnackbarMessage(errorMessage);
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
     }
   };
-
+  
+  
   useEffect(() => {
-    // Lấy dữ liệu từ API
+    const token = localStorage.getItem("access_token");
     axios
-      .get('http://localhost:5001/planes')
+      .get('http://localhost:3000/planes', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
-        setPlanes(response.data); // Lưu dữ liệu vào state
+        setPlanes(response.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('There was an error fetching the planes data!', error);
+        console.error('Error fetching planes:', error);
+        setSnackbarMessage('Failed to load planes data.');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
         setLoading(false);
       });
   }, []);
-
   if (loading) {
     return <div>Loading...</div>; // Hiển thị thông báo khi dữ liệu đang được tải
   }
@@ -213,7 +265,7 @@ export default function AddPlane() {
           </Grid>
         </Grid>
         <div style={{ textAlign: 'center', marginBottom: 1 }}>
-          <div style={{ color: 'red' }}>{fullInfromation}</div>
+          <div style={{ color: 'red' }}>{fullInformation}</div>
         </div>
       </Container>
 
@@ -236,8 +288,8 @@ export default function AddPlane() {
             </TableHead>
             <TableBody>
               {planes.map((plane) => (
-                <StyledTableRow key={plane.id}>
-                  <StyledTableCell>{plane.id}</StyledTableCell>
+                <StyledTableRow key={plane.plane_id}>
+                  <StyledTableCell>{plane.plane_id}</StyledTableCell>
                   <StyledTableCell>{plane.manufacturer}</StyledTableCell>
                   <StyledTableCell>{plane.customer_seat_count}</StyledTableCell>
                 </StyledTableRow>
