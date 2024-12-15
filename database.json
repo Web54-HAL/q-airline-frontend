@@ -1,0 +1,366 @@
+{
+  "register": [
+    {
+      "id": "1",
+      "password": "securepassword123",
+      "family_name": "Doe",
+      "given_name": "John",
+      "email": "john.doe@example.com",
+      "phone_num": "+84346207893",
+      "date_of_birth": "1990-01-01",
+      "gender": "male"
+    },
+    {
+      "id": "2"
+    }
+  ],
+  "login": [
+    {
+      "id": "2ca0",
+      "name": "",
+      "password": ""
+    },
+    {
+      "id": "3f15",
+      "name": "linh",
+      "password": ""
+    },
+    {
+      "id": "6f8a",
+      "name": "sc",
+      "password": "dvx"
+    },
+    {
+      "id": "19e7",
+      "name": "",
+      "password": ""
+    },
+    {
+      "id": "4bb2",
+      "name": "",
+      "password": ""
+    },
+    {
+      "id": "fbde",
+      "username": "",
+      "password": ""
+    },
+    {
+      "id": "44ab",
+      "username": "",
+      "password": ""
+    },
+    {
+      "id": "b198",
+      "username": "84346207893",
+      "password": "securepassword123"
+    }
+  ],
+  "flights": [
+    {
+      "flight_id": "VN123",
+      "start_pos": "HAN",
+      "end_pos": "SGN",
+      "start_date": "2024-01-01",
+      "end_date": "2024-01-07",
+      "price": 5000000,
+      "available_seats": 10,
+      "id": "66a5"
+    },
+    {
+      "flight_id": "VN456",
+      "start_pos": "HAN",
+      "end_pos": "SGN",
+      "start_date": "2024-01-01",
+      "end_date": "2024-01-07",
+      "price": 5500000,
+      "available_seats": 8,
+      "id": "517a"
+    }
+  ],
+  "bookings": [
+    {
+      "ticket_id": 103,
+      "customer_id": 1003,
+      "flight_id": 5003,
+      "from_pos": "HAN",
+      "to_pos": "CXR",
+      "time_start": "2024-12-18T13:15:00Z",
+      "plane_id": 3003,
+      "booking_date": "2024-12-13T09:15:00Z",
+      "adult_count": 2,
+      "children_count": 2,
+      "infant_count": 1,
+      "duration_min": 100,
+      "id": "9e9e"
+    },
+    {
+      "ticket_id": 104,
+      "customer_id": 1004,
+      "flight_id": 5004,
+      "from_pos": "CXR",
+      "to_pos": "HAN",
+      "time_start": "2024-12-17T09:45:00Z",
+      "plane_id": 3004,
+      "booking_date": "2024-12-12T08:45:00Z",
+      "adult_count": 3,
+      "children_count": 0,
+      "infant_count": 0,
+      "duration_min": 95,
+      "id": "1198"
+    }
+  ],
+  "search": [
+    {
+      "flight_ID": "VN123",
+      "from_airport": "Hanoi (HAN)",
+      "to_airport": "Ho Chi Minh City (SGN)",
+      "starting_time": "2024-12-15T07:30:00Z",
+      "stopping_time": "2024-12-15T09:30:00Z",
+      "id": "fc0d"
+    },
+    {
+      "flight_ID": "VN456",
+      "from_airport": "Da Nang (DAD)",
+      "to_airport": "Hanoi (HAN)",
+      "starting_time": "2024-12-16T10:00:00Z",
+      "stopping_time": "2024-12-16T12:00:00Z",
+      "id": "2791"
+    },
+    {
+      "flight_ID": "VN789",
+      "from_airport": "Ho Chi Minh City (SGN)",
+      "to_airport": "Da Nang (DAD)",
+      "starting_time": "2024-12-17T14:00:00Z",
+      "stopping_time": "2024-12-17T16:00:00Z",
+      "id": "03ef"
+    },
+    {
+      "flight_ID": "VN101",
+      "from_airport": "Hanoi (HAN)",
+      "to_airport": "Phu Quoc (PQC)",
+      "starting_time": "2024-12-18T18:00:00Z",
+      "stopping_time": "2024-12-18T20:00:00Z",
+      "id": "e24d"
+    },
+    {
+      "flight_ID": "VN202",
+      "from_airport": "Phu Quoc (PQC)",
+      "to_airport": "Ho Chi Minh City (SGN)",
+      "starting_time": "2024-12-19T21:00:00Z",
+      "stopping_time": "2024-12-19T22:30:00Z",
+      "id": "a30b"
+    }
+  ],
+  "promotions": [
+    {
+      "promotion_id": 1,
+      "title": "Winter Sale 2024",
+      "markdown_content": "## Big Discounts!\nEnjoy up to 50% off on selected items.",
+      "preview_image_url": "https://example.com/images/winter-sale.png",
+      "created_at": "2024-12-06T00:00:00Z",
+      "start_date": "2024-12-15",
+      "end_date": "2024-12-31",
+      "id": "f8cf"
+    },
+    {
+      "promotion_id": 2,
+      "title": "Ưu đãi Techcombank",
+      "markdown_content": "## Giảm ngay 1.5 triệu!\nĐặt vé quốc tế và nhận ngay ưu đãi.",
+      "preview_image_url": "https://example.com/images/techcombank-offer.png",
+      "created_at": "2024-12-06T00:00:00Z",
+      "start_date": "2024-12-15",
+      "end_date": "2024-12-31",
+      "id": "c8bf"
+    },
+    {
+      "promotion_id": 3,
+      "title": "Ưu đãi độc quyền",
+      "markdown_content": "## Giảm giá đặc biệt!\nDành riêng cho khách hàng thân thiết.",
+      "preview_image_url": "https://example.com/images/exclusive-offer.png",
+      "created_at": "2024-12-06T00:00:00Z",
+      "start_date": "2024-12-15",
+      "end_date": "2024-12-31",
+      "id": "8466"
+    },
+    {
+      "promotion_id": 4,
+      "title": "Mùa hè rực rỡ",
+      "markdown_content": "## Ưu đãi mùa hè!\nTận hưởng chuyến bay giá rẻ.",
+      "preview_image_url": "https://example.com/images/summer-sale.png",
+      "created_at": "2024-12-06T00:00:00Z",
+      "start_date": "2024-12-15",
+      "end_date": "2024-12-31",
+      "id": "e74c"
+    },
+    {
+      "promotion_id": 5,
+      "title": "Combo Siêu Tiết Kiệm",
+      "markdown_content": "## Đặt ngay combo vé máy bay + khách sạn!\nƯu đãi giảm giá 30%.",
+      "preview_image_url": "https://example.com/images/combo-offer.png",
+      "created_at": "2024-12-06T00:00:00Z",
+      "start_date": "2024-12-15",
+      "end_date": "2024-12-31",
+      "id": "9677"
+    },
+    {
+      "promotion_id": 6,
+      "title": "Black Friday Sale",
+      "markdown_content": "## Siêu giảm giá!\nCơ hội đặt vé với giá thấp nhất trong năm.",
+      "preview_image_url": "https://example.com/images/black-friday-sale.png",
+      "created_at": "2024-12-06T00:00:00Z",
+      "start_date": "2024-12-15",
+      "end_date": "2024-12-31",
+      "id": "1186"
+    }
+  ],
+  "admin": [
+    {
+      "promotion_id": 1,
+      "title": "Winter Sale 2024",
+      "markdown_content": "## Big Discounts!\nEnjoy up to 50% off on selected items.",
+      "preview_image_url": "https://via.placeholder.com/150",
+      "created_at": "2024-12-06T00:00:00Z",
+      "start_date": "2024-12-15",
+      "end_date": "2024-12-31",
+      "id": "0d0e"
+    },
+    {
+      "promotion_id": 2,
+      "title": "Summer Clearance",
+      "markdown_content": "### Limited Time Offer\nClearance sale with discounts up to 70% on summer collections.",
+      "preview_image_url": "https://via.placeholder.com/150",
+      "created_at": "2024-06-01T00:00:00Z",
+      "start_date": "2024-06-05",
+      "end_date": "2024-06-30",
+      "id": "c9cd"
+    },
+    {
+      "promotion_id": 3,
+      "title": "Back to School Deals",
+      "markdown_content": "## Get Ready for School\nSave 30% on all school supplies and accessories.",
+      "preview_image_url": "https://via.placeholder.com/150",
+      "created_at": "2024-08-01T00:00:00Z",
+      "start_date": "2024-08-10",
+      "end_date": "2024-08-25",
+      "id": "5778"
+    },
+    {
+      "promotion_id": 4,
+      "title": "Black Friday Blowout",
+      "markdown_content": "### Black Friday Special\nEnjoy unbelievable discounts across all categories.",
+      "preview_image_url": "https://via.placeholder.com/150",
+      "created_at": "2024-11-01T00:00:00Z",
+      "start_date": "2024-11-25",
+      "end_date": "2024-11-30",
+      "id": "38a6"
+    },
+    {
+      "promotion_id": 5,
+      "title": "New Year Mega Sale",
+      "markdown_content": "## Ring in the New Year with Savings\nUp to 60% off on select items for the new year.",
+      "preview_image_url": "https://via.placeholder.com/150",
+      "created_at": "2024-12-20T00:00:00Z",
+      "start_date": "2024-12-26",
+      "end_date": "2025-01-05",
+      "id": "98f9"
+    },
+    {
+      "id": "2ba3",
+      "promotion_id": "nnnnnnnnnn",
+      "title": "nnnnnnnnnnnnnn",
+      "markdown_content": "nnnnnnnnnnnnnnnnnjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj\nk\nk\nmk\nnkb \nvn bvhj",
+      "preview_image_url": "mnnnnnnnnnn",
+      "created_at": "2024-12-12T17:07:40.932Z",
+      "start_date": "nnnnnnnnnnnnnn",
+      "end_date": "nnnnnnnnnnnnnnnnn"
+    },
+    {
+      "id": "01fa",
+      "promotion_id": "",
+      "title": "xc ",
+      "markdown_content": "sf vxcdv",
+      "preview_image_url": "dxv c",
+      "created_at": "2024-12-12T17:29:51.961Z",
+      "start_date": "v fdxc",
+      "end_date": "dfxc"
+    },
+    {
+      "id": "f9dd",
+      "promotion_id": "",
+      "title": "hvj",
+      "markdown_content": "<p align=\"center\">\n  <a href=\"http://nestjs.com/\" target=\"blank\"><img src=\"https://nestjs.com/img/logo-small.svg\" width=\"120\" alt=\"Nest Logo\" /></a>\n</p>\n\n[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456\n[circleci-url]: https://circleci.com/gh/nestjs/nest\n\n## Project setup\n\n```bash\n$ npm install\n```\nCreate your own `.env` file based on [.env.example](.env.example)\n\n## Compile and run the project\n\n```bash\n# development\n$ npm run start\n\n# watch mode\n$ npm run start:dev\n\n# production mode\n$ npm run start:prod\n```\n\n## License\n\nNest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).",
+      "preview_image_url": "vasd",
+      "created_at": "2024-12-12T17:44:17.809Z",
+      "start_date": "2024-12-17",
+      "end_date": "2024-11-27"
+    },
+    {
+      "id": "2bc8",
+      "promotion_id": "",
+      "title": "xxxx",
+      "markdown_content": "xxx",
+      "preview_image_url": "xxxx",
+      "created_at": "2024-12-13T17:43:28.624Z",
+      "start_date": "2024-12-26",
+      "end_date": "2024-12-13"
+    }
+  ],
+  "tickets": [
+    {
+      "ticket_id": 1,
+      "customer_id": 101,
+      "flight_id": 201,
+      "booking_date": "2024-12-10T12:00:00Z",
+      "adult_count": 2,
+      "children_count": 1,
+      "infant_count": 0,
+      "total_passengers": 3,
+      "id": "37af"
+    },
+    {
+      "ticket_id": 2,
+      "customer_id": 102,
+      "flight_id": 202,
+      "booking_date": "2024-12-11T15:30:00Z",
+      "adult_count": 1,
+      "children_count": 0,
+      "infant_count": 0,
+      "total_passengers": 1,
+      "id": "aece"
+    },
+    {
+      "ticket_id": 3,
+      "customer_id": 103,
+      "flight_id": 203,
+      "booking_date": "2024-12-12T08:45:00Z",
+      "adult_count": 3,
+      "children_count": 2,
+      "infant_count": 1,
+      "total_passengers": 6,
+      "id": "7629"
+    },
+    {
+      "ticket_id": 4,
+      "customer_id": 104,
+      "flight_id": 204,
+      "booking_date": "2024-12-13T18:00:00Z",
+      "adult_count": 2,
+      "children_count": 0,
+      "infant_count": 1,
+      "total_passengers": 3,
+      "id": "bb83"
+    },
+    {
+      "ticket_id": 5,
+      "customer_id": 105,
+      "flight_id": 205,
+      "booking_date": "2024-12-14T09:20:00Z",
+      "adult_count": 1,
+      "children_count": 1,
+      "infant_count": 0,
+      "total_passengers": 2,
+      "id": "3c23"
+    }
+  ]
+}

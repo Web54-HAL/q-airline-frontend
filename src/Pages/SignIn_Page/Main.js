@@ -14,7 +14,11 @@ import Axios from "axios";
 import { useState, useEffect } from "react";
 import FlightIcon from "@mui/icons-material/Flight";
 import { useNavigate } from "react-router-dom";
-import Image from "../SignUp_Page/1.jpg";
+import Image from "../SignUp_Page/6.jpg";
+import "../../color.css";
+import "@fontsource/poppins"; // Import toàn bộ font
+import { jwtDecode } from "jwt-decode";
+
 
 const theme = createTheme();
 
@@ -37,17 +41,39 @@ export default function SignInSide() {
     }
   }, []);
 
-  const checkUser = () => {
-    Axios.post("http://localhost:5000/login", {
-      name: name,
-      password: password,
-    }).then((response) => {
-      console.log(response.status);
+  const checkUser = async () => {
+    if (!name || !password) {
+      setWrong("Please fill in both username and password.");
+      return;
+    }
+  
+    try {
+      const response = await Axios.post("http://localhost:3000/auth/login", {
+        username: name,
+        password: password,
+      });
+  
       if (response.status === 200) {
-        
-        localStorage.setItem("access_token", response.data.access_token);
-
-        // Save credentials if "Remember Me" is checked
+        // Lưu token vào localStorage
+        const token = response.data.access_token;
+        localStorage.setItem("access_token", token);
+  
+        // Giải mã token để xem thông tin
+        try {
+          const decodedToken = jwtDecode(token); // Giải mã token
+          console.log("Decoded Token:", decodedToken);
+  
+          // Kiểm tra role và điều hướng
+          if (decodedToken.role === "Admin") {
+            navigate("/admin/dashboard"); // Điều hướng đến trang Admin Dashboard
+          } else {
+            navigate("/user/dashboard"); // Điều hướng đến trang User Dashboard
+          }
+        } catch (decodeError) {
+          console.error("Error decoding token:", decodeError);
+        }
+  
+        // Lưu thông tin nếu Remember Me được chọn
         if (rememberMe) {
           localStorage.setItem("saved_user", name);
           localStorage.setItem("saved_password", password);
@@ -55,17 +81,22 @@ export default function SignInSide() {
           localStorage.removeItem("saved_user");
           localStorage.removeItem("saved_password");
         }
-
-        navigate("/");
       } else {
-        setWrong("Invalid username or password");
+        setWrong("Invalid username or password.");
       }
-    }).catch((error) => {
+    } catch (error) {
+      if (error.response) {
+        setWrong(error.response.data.message || "Invalid username or password.");
+      } else if (error.request) {
+        setWrong("Unable to connect to the server. Please try again later.");
+      } else {
+        setWrong("An unexpected error occurred. Please try again.");
+      }
       console.error("Error during login:", error);
-      setWrong("An error occurred. Please try again.");
-    });
+    }
   };
-
+  
+  
   return (
     <ThemeProvider theme={theme}>
       <Grid
@@ -82,7 +113,13 @@ export default function SignInSide() {
         }}
       >
         <CssBaseline />
-        <Grid item xs={1} sm={7} />
+        <Grid
+  item
+  xs={1}
+  sm={7}>
+  
+</Grid>
+
         <Grid
           item
           xs={11}
@@ -114,15 +151,14 @@ export default function SignInSide() {
                 justifyContent: "center",
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: "blue" }}>
+              <Avatar sx={{ m: 1, bgcolor: "var(--primary-color)" }}>
                 <FlightIcon sx={{ color: "white" }} />
               </Avatar>
-              <Typography component="h1" variant="h5">
+              <Typography component="h1" variant="h5" sx={{ color: "var(--primary-color)", fontWeight:"bold"}}>
                 Sign in
               </Typography>
             </Typography>
             <Box
-              component="form"
               noValidate
               sx={{
                 mt: 1,
@@ -163,12 +199,14 @@ export default function SignInSide() {
               />
               <Button
                 onClick={checkUser}
-                type="submit"
+                type="button"
                 fullWidth
                 variant="contained"
+                
                 sx={{
                   mt: 3,
                   mb: 2,
+                  bgcolor: "var(--primary-color)" 
                 }}
               >
                 Sign In

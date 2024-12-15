@@ -1,395 +1,328 @@
-import * as React from "react";
+import React, { useState, } from "react";
 import { useLocation } from "react-router-dom";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Avatar, TextField } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import { useState } from "react";
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  TextField,
+  Button,
+  Container,
+  Avatar,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  styled,
+} from "@mui/material";
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import axios from "axios";
-import "../../../src/color.css";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-const theme = createTheme();
-export default function Booking() {
-  const handleChange = (e) => {
+import "../../color.css";
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiOutlinedInput-root": {
+    borderBottom: "2px solid var(--primary-color)",
+    borderRadius: 0,
+    "& fieldset": {
+      border: "none",
+    },
+    "&:hover fieldset": {
+      border: "none",
+    },
+    "&.Mui-focused fieldset": {
+      border: "none",
+    },
+  },
+}));
+
+const Booking = () => {
+  // Extract URL parameters
+  const location = useLocation();
+  const pathParts = location.pathname.split("/");
+  const flight_id = pathParts[3] || "";
+  const from_pos = decodeURIComponent(pathParts[4] || "");
+  const to_pos = decodeURIComponent(pathParts[5] || "");
+  const time_start = pathParts[6] || "";
+  const bookingDate = pathParts[7] || "";
+  const plane_id = pathParts[8] || "";
+  const duration_minute = pathParts[9] || "";
+
+
+  // Decode access_token
+  //const token = localStorage.getItem("access_token");
+  let customerId = "";
+  let email = "";
+
+  // if (token) {
+  //   try {
+  //     const decodedToken = jwt_decode(token);
+  //     customerId = decodedToken.customer_id || "Unknown ID";
+  //     email = decodedToken.email || "Unknown Email";
+  //   } catch (error) {
+  //     console.error("Error decoding token:", error);
+  //   }
+  // }
+
+  // State for passenger details and form data
+  const [formData, setFormData] = useState({
+    adultCount: 1,
+    childCount: 0,
+    infantCount: 0,
+  });
+
+  // Snackbar for notifications
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
-  //////////////////
-  function convertToDateTimeLocal(isoString) {
-    try {
-      // Chuyển đổi chuỗi thành đối tượng Date
-      const dateObject = new Date(isoString);
 
-      if (isNaN(dateObject.getTime())) {
-        throw new Error("Invalid ISO string");
-      }
-      const year = dateObject.getFullYear();
-      const month = String(dateObject.getMonth() + 1).padStart(2, "0");
-      const day = String(dateObject.getDate()).padStart(2, "0");
-      const hours = String(dateObject.getHours()).padStart(2, "0");
-      const minutes = String(dateObject.getMinutes()).padStart(2, "0");
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
 
-      // Trả về định dạng 'YYYY-MM-DDTHH:mm'
-      return `${year}-${month}-${day}T${hours}:${minutes}`;
-    } catch (error) {
-      console.error("Error converting ISO string:", error.message);
-      return null;
-    }
-  }
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
 
-  /////////////////
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
-  // Hàm đặt vé
-  const handleSubmit = async () => {
+  const handleConfirmBooking = async () => {
+    setDialogOpen(false);
+  
     const bookingData = {
-      ...formData,
+      flight_id,
+      from_pos,
+      to_pos,
+      time_start,
+      bookingDate,
+      duration_minute,
+      plane_id,
+      customerId,
+      adultCount: formData.adultCount,
+      childCount: formData.childCount,
+      infantCount: formData.infantCount,
     };
-
+  
     try {
+      // Retrieve JWT token from localStorage
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        throw new Error("No authentication token found. Please log in.");
+      }
+  
       const response = await axios.post(
-        "/",
+        "http://localhost:3000/tickets/book",
         bookingData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt")}`, // Thêm JWT vào header
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
-
+  
       if (response.status === 200) {
         setSnackbarMessage("Booking successful!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
       }
     } catch (error) {
+      console.error("Booking failed:", error);
       setSnackbarMessage("Booking failed, please try again later.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
-
-  // Đóng snackbar
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
-  ///////////////////////////////////
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const [formData, setFormData] = useState({
-    flight_id: "",
-    booking_date: "",
-    adult_count: 1,
-    children_count: 0,
-    infant_count: 0,
-  });
-
-  const flightId = queryParams.get("flightId");
-  const from = queryParams.get("from");
-  const to = queryParams.get("to");
-  const departureTime = convertToDateTimeLocal(
-    queryParams.get("departureTime")
-  );
-  const bookingDate = convertToDateTimeLocal(queryParams.get("bookingDate"));
-  const flightdetails = [
-    { name: "From", detail: from },
-    { name: "To", detail: to },
-    { name: "Departure Time", detail: departureTime },
-  ];
-
+  
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ bgcolor: "var(--primary-color)" }}>
-        <Avatar
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: "12px",
+          overflow: "hidden",
+          p: 3,
+          bgcolor: "#f7f9fc",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        {/* Header */}
+        <Box
           sx={{
-            width: 120,
-            height: 120,
-            m: "0px 30px",
-            position: "relative",
-            top: "15px",
+            textAlign: "center",
+            mb: 3,
             bgcolor: "var(--primary-color)",
+            color: "white",
+            borderRadius: "8px",
+            p: 2,
           }}
         >
-          <AccountCircleIcon sx={{ fontSize: 110, color: "white" }} />
-        </Avatar>
-        <Grid container spacing={3} sx={{ width: "96%", margin: "15px 10px" }}>
-          <Grid item xs={5}>
-            <Paper
-              variant="outlined"
-              sx={{
-                height: "60%",
-                width: "100%",
-                p: 3,
-                boxShadow: 2,
-                borderRadius: "8px",
-                background: "var(--background-color)", // Gradient cam
-                color: "#48B89F",
-              }}
-            >
-              <Typography
-                component="h5"
-                variant="h5"
-                align="center"
-                bgcolor="var(--primary-color)" // Cam nhạt cho tiêu đề
-                color="white"
-                sx={{ borderRadius: "4px", p: 1 }}
-              >
-                Flight Details
+          <Avatar
+            sx={{
+              bgcolor: "white",
+              color: "var(--primary-color)",
+              mx: "auto",
+              mb: 1,
+              width: 60,
+              height: 60,
+            }}
+          >
+            <FlightTakeoffIcon sx={{ fontSize: 40 }} />
+          </Avatar>
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            Booking Details
+          </Typography>
+        </Box>
+
+        {/* Flight Information */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2,  color : "var(--primary-color)"}}>
+            Flight Information
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Flight ID:</strong> {flight_id}
               </Typography>
-              <Grid
-                container
-                justifyContent={"center"}
-                marginTop={2}
-                spacing={2}
-              >
-                {flightdetails.map((flight) => (
-                  <React.Fragment key={flight.name}>
-                    <Grid item xs={4}>
-                      <Typography
-                        align="right"
-                        gutterBottom
-                        sx={{
-                          color: "#248277", // Chữ cam đậm
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {flight.name}:
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <Typography
-                        align="left"
-                        gutterBottom
-                        sx={{
-                          color: "#48B89F", // Chữ cam nhạt vừa phải
-                        }}
-                      >
-                        {flight.detail}
-                      </Typography>
-                    </Grid>
-                  </React.Fragment>
-                ))}
-              </Grid>
-            </Paper>
-          </Grid>
-          <Grid item xs={7}>
-            <Paper
-              variant="outlined"
-              sx={{
-                height: "100%",
-                width: "95%",
-                p: 5,
-                boxShadow: 2,
-                borderRadius: "8px",
-                background: "var(--background-color)", // Gradient cam nhạt
-              }}
-            >
-              <Typography
-                variant="h5"
-                align="center"
-                bgcolor="var(--primary-color)" // Cam nhạt
-                color="white"
-                sx={{ borderRadius: "4px", p: 1, mb: 2 }}
-              >
-                Booking Information
+              <Typography>
+                <strong>From:</strong> {from_pos}
               </Typography>
-              <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                }}
-              >
-                <TextField
-                  fullWidth
-                  label="Customer ID"
-                  name="customer_id"
-                  value={formData.flightId}
-                  onChange={handleChange}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": { borderColor: "var(--primary-color)" }, // Viền cam nhạt
-                      "&:hover fieldset": {
-                        borderColor: "var(--primary-color)5",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "var(--primary-color)",
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Flight ID"
-                  name="flight_id"
-                  value={flightId}
-                  onChange={handleChange}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": { borderColor: "var(--primary-color)" },
-                      "&:hover fieldset": {
-                        borderColor: "var(--primary-color)",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "var(--primary-color)",
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Booking Date"
-                  name="booking_date"
-                  type="datetime-local"
-                  value={bookingDate}
-                  onChange={handleChange}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": { borderColor: "var(--primary-color)" },
-                      "&:hover fieldset": {
-                        borderColor: "var(--primary-color)",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "var(--primary-color)",
-                      },
-                    },
-                  }}
-                />
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                    gap: 2,
-                  }}
-                >
-                  <TextField
-                    fullWidth
-                    label="Adults"
-                    name="adult_count"
-                    type="number"
-                    value={formData.adult_count}
-                    onChange={handleChange}
-                    inputProps={{ min: 1 }}
-                    required
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": { borderColor: "var(--primary-color)" },
-                        "&:hover fieldset": {
-                          borderColor: "var(--primary-color)",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "var(--primary-color)",
-                        },
-                      },
-                    }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Children"
-                    name="children_count"
-                    type="number"
-                    value={formData.children_count}
-                    onChange={handleChange}
-                    inputProps={{ min: 0 }}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": { borderColor: "var(--primary-color)" },
-                        "&:hover fieldset": {
-                          borderColor: "var(--primary-color)",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "var(--primary-color)",
-                        },
-                      },
-                    }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Infants"
-                    name="infant_count"
-                    type="number"
-                    value={formData.infant_count}
-                    onChange={handleChange}
-                    inputProps={{ min: 0 }}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": { borderColor: "var(--primary-color)" },
-                        "&:hover fieldset": {
-                          borderColor: "var(--primary-color)",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "var(--primary-color)0",
-                        },
-                      },
-                    }}
-                  />
-                </Box>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  sx={{
-                    backgroundColor: "var(--primary-color)", // Nút cam nhạt
-                    "&:hover": {
-                      backgroundColor: "var(--primary-color)", // Cam đậm hơn khi hover
-                    },
-                  }}
-                >
-                  Book Now
-                </Button>
-              </Box>
-            </Paper>
-            {/* Hiển thị Snackbar */}
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={4000}
-              onClose={handleCloseSnackbar}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Alert
-                onClose={handleCloseSnackbar}
-                severity={snackbarSeverity}
-                sx={{ width: "100%" }}
-              >
-                {snackbarMessage}
-              </Alert>
-            </Snackbar>
+              <Typography>
+                <strong>To:</strong> {to_pos}
+              </Typography>
+              <Typography>
+                <strong>Plane ID:</strong> {plane_id}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography>
+                <strong>Departure Time:</strong> {time_start}
+              </Typography>
+              <Typography>
+                <strong>Duration minutes:</strong> {time_start}
+              </Typography>
+              <Typography>
+                <strong>Booking Date:</strong> {bookingDate}
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
-        <Container
-          component="main"
-          sx={{
-            mb: 4,
-            alignItems: "center",
-            display: "flex",
-          }}
-        ></Container>
-      </Box>
-    </ThemeProvider>
+        </Box>
+
+        {/* Customer Information */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, color : "var(--primary-color)"}}>
+            Customer Information
+          </Typography>
+          <Typography>
+            <strong>Customer ID:</strong> {customerId}
+          </Typography>
+          <Typography>
+            <strong>Email:</strong> {email}
+          </Typography>
+        </Box>
+
+        {/* Passenger Count */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, color : "var(--primary-color)"}}>
+            Passenger Count
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <StyledTextField
+                fullWidth
+                label="Adults"
+                name="adultCount"
+                type="number"
+                value={formData.adultCount}
+                onChange={handleInputChange}
+                inputProps={{ min: 1 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <StyledTextField
+                fullWidth
+                label="Children"
+                name="childCount"
+                type="number"
+                value={formData.childCount}
+                onChange={handleInputChange}
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <StyledTextField
+                fullWidth
+                label="Infants"
+                name="infantCount"
+                type="number"
+                value={formData.infantCount}
+                onChange={handleInputChange}
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Submit Button */}
+        <Box sx={{ textAlign: "center" }}>
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: "var(--primary-color)",
+              "&:hover": { bgcolor: "var(--primary-color-dark)" },
+              px: 4,
+            }}
+            onClick={handleDialogOpen}
+          >
+            Confirm Booking
+          </Button>
+        </Box>
+      </Paper>
+
+      {/* Dialog */}
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Confirm Booking</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to confirm this booking?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>No</Button>
+          <Button onClick={handleConfirmBooking} variant="contained" color="primary">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
-}
+};
+
+export default Booking;

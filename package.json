@@ -1,14 +1,32 @@
 {
-  "name": "qairline",
+  "name": "q-airline",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "cra-template": "1.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-scripts": "5.0.1"
+    "@emotion/styled": "^11.13.5",
+    "@fontsource/poppins": "^5.1.0",
+    "@mui/icons-material": "^6.1.9",
+    "@mui/material": "^6.1.9",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.8",
+    "json-server": "^1.0.0-beta.3",
+    "jwt-decode": "^4.0.0",
+    "prop-types": "^15.8.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "react-router-dom": "^7.0.1",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^10.0.6",
+    "sass": "^1.81.0",
+    "styled-components": "^6.1.13",
+    "swiper": "^11.1.15",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "server": "json-server --watch database.json",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -31,7 +49,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-
-  
   }
 }

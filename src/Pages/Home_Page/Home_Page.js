@@ -4,9 +4,9 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Image1 from './air1.jpeg';
-import Image2 from './air2.jpeg';
-import Image3 from './air3.jpeg';
+import Image1 from '../SignUp_Page/1.jpg';
+import Image2 from '../SignUp_Page/1.jpg';
+import Image3 from '../SignUp_Page/1.jpg';
 import './Main.css';
 
 const images = [Image1, Image2, Image3];

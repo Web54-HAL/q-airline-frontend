@@ -62,7 +62,12 @@ export default function PostPromotions() {
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/admin");
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:3000/promotions", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setPromotions(response.data);
       } catch (error) {
         console.error("Error fetching promotions:", error);
@@ -91,7 +96,7 @@ export default function PostPromotions() {
       !start_date ||
       !end_date
     ) {
-        setSnackbarMessage("Please fill in all the required information.");
+      setSnackbarMessage("Please fill in all the required information.");
 
       setSnackbarSeverity("warning");
       setSnackbarOpen(true);
@@ -101,12 +106,17 @@ export default function PostPromotions() {
     try {
       const newPromotionData = {
         ...newPromotion,
-        created_at: new Date().toISOString(), // Tự động gán thời gian hiện tại
+        created_at: new Date().toISOString(), 
       };
 
       const response = await axios.post(
-        "http://localhost:5000/admin",
-        newPromotionData
+        "http://localhost:3000/promotions",
+        newPromotionData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`, 
+          },
+        }
       );
 
       setPromotions((prev) => [...prev, response.data]);
@@ -294,7 +304,16 @@ export default function PostPromotions() {
         </StyledDialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleAddPromotion}>
+          <Button
+            variant="contained"
+            onClick={handleAddPromotion}
+            sx={{
+              backgroundColor: "#159F91",
+              color: "white",
+              borderRadius: "8px",
+              padding: "8px 16px",
+            }}
+          >
             Save Promotion
           </Button>
         </DialogActions>

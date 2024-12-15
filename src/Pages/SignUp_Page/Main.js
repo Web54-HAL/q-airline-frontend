@@ -5,22 +5,20 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import FlightIcon from "@mui/icons-material/Flight";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useState } from "react";
-import Axios, * as others from "axios";
-import Image from "./1.jpg";
-import { Paper } from "@mui/material";
+import Axios from "axios";
+import Image from "./6.jpg";
 import { useNavigate } from "react-router-dom";
+import "../../color.css";
 const theme = createTheme();
 
 export default function SignUp() {
@@ -29,7 +27,7 @@ export default function SignUp() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      user: data.get("email")
+      user: data.get("email"),
     });
   };
 
@@ -43,7 +41,6 @@ export default function SignUp() {
   const [confirm_password, setConfirmPassword] = useState("");
   const [fullInfromation, setFullInfromation] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
-  const [ID, setID] = useState("");
   const addUser = () => {
     if (
       !firstName ||
@@ -61,28 +58,28 @@ export default function SignUp() {
       setCheckPassword("*Password and confirm password does not match.");
       setFullInfromation("");
     } else {
-      Axios.post("http://localhost:5000/register", {
-        firstName: firstName,
-        lastName: lastName,
-        birthday: birthday,
+      Axios.post("http://localhost:3000/auth/register", {
+        family_name: firstName,
+        given_name: lastName,
+        date_of_birth: birthday,
         gender: gender,
-        phoneNumber: phoneNumber,
-        email : email,
+        phone_num: phoneNumber,
+        email: email,
         password: password,
-      }).then((response) => {
-        console.log("Response:", response.data);
-        localStorage.setItem("token", response.data.token); 
-        setID(response.data.customer_id);
-        navigate("/SignIn");
       })
-      .catch((error) => {
-        if (error.response) {
-          console.error("Lỗi từ backend:", error.response.data);
-          setCheckPassword("The email exists");
-        } else {
-          console.error("Lỗi kết nối:", error.message);
-        }
-      });
+        .then((response) => {
+          console.log("Response:", response.data);
+          localStorage.setItem("token", response.data.token);
+          // navigate("/SignIn");
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error("Lỗi từ backend:", error.response.data);
+            setCheckPassword("The email exists");
+          } else {
+            console.error("Lỗi kết nối:", error.message);
+          }
+        });
     }
   };
 
@@ -90,27 +87,37 @@ export default function SignUp() {
     <>
       <ThemeProvider theme={theme}>
         <Grid
-          container
-          component="main"
-          sx={{
-            backgroundImage: `url(${Image})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-height:"90vh",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-          }}
-        >
+  container
+  component="main"
+  sx={{
+    backgroundImage: `url(${Image})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    height: "100%", 
+    minHeight: "100vh", 
+    display: "flex",
+    paddingLeft : "15px",
+    justifyContent: "center",
+  }}
+>
           <CssBaseline />
-          <Grid item xs={1} sm={7} order={1} />
+          <Grid 
+      item 
+      xs={12} 
+      sm={7} 
+      order={1} 
+        sx={{paddingTop : "40px"}}
+    >
+      
+    </Grid>
           <Grid
             item
             xs={11}
             sm={5}
             order={2}
             sx={{
-              position : "relative",
+              height : "auto",
+              position: "relative",
               backgroundColor: "rgba(255, 255, 255, 0.6)",
               backdropFilter: "blur(15px)",
               borderRadius: "12px",
@@ -133,20 +140,23 @@ height:"90vh",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 1, // Khoảng cách giữa Avatar và Typography
-                  mb: 2, // Khoảng cách dưới toàn bộ tiêu đề
+                  gap: 1,
+                  mb: 2,
                 }}
               >
-                <Avatar sx={{ m: 1, bgcolor: "blue" }}>
+                <Avatar sx={{ m: 1, bgcolor: "var(--primary-color)" }}>
                   <FlightIcon />
                 </Avatar>
 
-                <Typography component="h1" variant="h5">
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  sx={{ color: "var(--primary-color)", fontWeight: "bold" }}
+                >
                   Sign up
                 </Typography>
               </Box>
               <Box
-                component="form"
                 onSubmit={handleSubmit}
                 noValidate
                 sx={{ mt: 1 }}
@@ -290,10 +300,10 @@ height:"90vh",
                 </Grid>
                 <Button
                   onClick={addUser}
-                  type="submit"
+                  type="button"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, bgcolor: "var(--primary-color)" }}
                 >
                   Sign Up
                 </Button>

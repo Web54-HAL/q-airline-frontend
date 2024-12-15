@@ -74,11 +74,16 @@ export default function AddFlight() {
       border: 0, // Remove border for the last row
     },
   }));
+  const token = localStorage.getItem("access_token");
 
   // Lấy danh sách chuyến bay khi load trang
   useEffect(() => {
     axios
-      .get('http://localhost:5001/flights')
+      .get('http://localhost:3000/flights', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setFlights(response.data);
         setLoading(false);

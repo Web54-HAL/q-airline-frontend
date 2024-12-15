@@ -40,7 +40,7 @@ export default function Search() {
   const [flightList, setFlightList] = useState([]);
   const [isShown, setIsShown] = useState(true);
   const [fullInformation, setFullInformation] = useState("");
-  const [error, setError] = useState(null);
+ 
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -62,7 +62,6 @@ export default function Search() {
       console.log(response.data);
     } catch (error) {
       console.error("Error fetching flight data:", error);
-      setError("Failed to fetch flight data. Please try again later.");
     }
   };
 
@@ -238,7 +237,7 @@ export default function Search() {
                 sx={{
                   mt: 1, mb: 2, backgroundColor: '#159F91ff',
                   color: 'white',
-                  '&:hover': { backgroundColor: '#5A9F68' }
+
                 }}
               >
                 Search
