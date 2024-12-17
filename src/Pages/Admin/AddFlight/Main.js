@@ -109,21 +109,22 @@ export default function AddFlight() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const now = new Date().toISOString();
-    if (formData.time_start < now) {
-      alert("Time start must not be earlier than now.");
+  
+    const now = new Date();
+    const inputTime = new Date(formData.time_start);
+  
+    if (inputTime < now) {
+      alert("Time start must not be earlier than the current time.");
       return;
     }
-
-    if (
-      !Number.isInteger(Number(formData.duration_minute)) ||
-      Number(formData.duration_minute) <= 0
-    ) {
+  
+    const duration = parseInt(formData.duration_minute, 10);
+  
+    if (!Number.isInteger(duration) || duration <= 0) {
       alert("Duration must be a positive integer.");
       return;
     }
-
+  
     if (
       !formData.plane_id ||
       !formData.from_pos ||
@@ -134,30 +135,36 @@ export default function AddFlight() {
       setFullInformation("*All fields are required.");
       return;
     }
+  
     const token = localStorage.getItem("access_token");
+  
     try {
+      console.log("Dữ liệu formData gửi đi:", formData);
+
       const response = await axios.post(
-        
         "http://localhost:3000/flights",
-        formData, {
+        formData,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-    });
+        }
+      );
+  
       setSnackbarMessage("Flight added successfully!");
       setOpenSnackbar(true);
-
+  
       setFlights((prevFlights) => [...prevFlights, response.data]);
-
+  
       setFormData({
-        flight_id: "",
+        total_passengers: "",
         plane_id: "",
         from_pos: "",
         to_pos: "",
         time_start: "",
-        total_passengers: "",
         duration_minute: "",
       });
+  
       setFullInformation("");
     } catch (error) {
       console.error("Error adding flight:", error);
@@ -165,6 +172,7 @@ export default function AddFlight() {
       setOpenSnackbar(true);
     }
   };
+  
 
   const handleEditClick = (flight) => {
     setEditingFlight(flight);

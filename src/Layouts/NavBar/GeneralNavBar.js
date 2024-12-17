@@ -135,16 +135,6 @@ export default function Navbar() {
       >
         <MenuItem onClick={() => navigate("/")}>Home</MenuItem>
         <MenuItem onClick={() => navigate("/search")}>Search</MenuItem>
-        <MenuItem
-          onClick={() => {
-            const sliderSection = document.getElementById("slider");
-            if (sliderSection) {
-              sliderSection.scrollIntoView({ behavior: "smooth" });
-            }
-          }}
-        >
-          New Post
-        </MenuItem>
         <MenuItem onClick={() => navigate("/SignIn")}>Login</MenuItem>
         <MenuItem onClick={() => navigate("/SignUp")}>Register</MenuItem>
       </Menu>

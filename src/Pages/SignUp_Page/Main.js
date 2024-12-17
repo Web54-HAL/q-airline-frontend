@@ -22,6 +22,7 @@ import "../../color.css";
 const theme = createTheme();
 
 export default function SignUp() {
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -58,6 +59,7 @@ export default function SignUp() {
       setCheckPassword("*Password and confirm password does not match.");
       setFullInfromation("");
     } else {
+      const token = localStorage.getItem("access_token");
       Axios.post("http://localhost:3000/auth/register", {
         family_name: firstName,
         given_name: lastName,
@@ -66,15 +68,21 @@ export default function SignUp() {
         phone_num: phoneNumber,
         email: email,
         password: password,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
         .then((response) => {
-          console.log("Response:", response.data);
-          localStorage.setItem("token", response.data.token);
-          // navigate("/SignIn");
+          if (response.status === 200) {
+            setOpenSnackbar(true); 
+            setTimeout(() => {
+              navigate("/SignIn"); 
+            }, 2000);
+          }
         })
         .catch((error) => {
           if (error.response) {
-            console.error("Lỗi từ backend:", error.response.data);
             setCheckPassword("The email exists");
           } else {
             console.error("Lỗi kết nối:", error.message);
@@ -106,7 +114,7 @@ export default function SignUp() {
       xs={12} 
       sm={7} 
       order={1} 
-        sx={{paddingTop : "40px"}}
+        sx={{paddingTop : "0px"}}
     >
       
     </Grid>
@@ -116,13 +124,14 @@ export default function SignUp() {
             sm={5}
             order={2}
             sx={{
-              height : "auto",
+            
               position: "relative",
               backgroundColor: "rgba(255, 255, 255, 0.6)",
               backdropFilter: "blur(15px)",
               borderRadius: "12px",
               padding: "20px 10px",
-              margin: "20px 0px",
+              margin: "90px 0px",
+              mt : "40px",
               right: "15px",
               boxShadow: "0px 6px 25px rgba(0, 0, 0, 0.3)",
             }}
@@ -133,6 +142,7 @@ export default function SignUp() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                m : 0
               }}
             >
               <Box
@@ -141,7 +151,7 @@ export default function SignUp() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 1,
-                  mb: 2,
+                  mb: 1,
                 }}
               >
                 <Avatar sx={{ m: 1, bgcolor: "var(--primary-color)" }}>
@@ -303,7 +313,7 @@ export default function SignUp() {
                   type="button"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, bgcolor: "var(--primary-color)" }}
+                  sx={{ mt: 2, bgcolor: "var(--primary-color)" }}
                 >
                   Sign Up
                 </Button>
