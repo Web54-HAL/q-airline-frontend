@@ -49,20 +49,7 @@ const TicketSearch = () => {
     const queryString = params.toString();
     window.history.pushState(null, "", `?${queryString}`);
   };
-// const fetchData = async () => {
-//     try {
-//       const token = localStorage.getItem('access_token'); 
-//       console.log(token);
-//       const response = await axios.get("http://localhost:3000/tickets/booked", {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
-//       setBookings(response.data);
-//     } catch (error) {
-//       console.error("Error fetching data:", error);
-//     }
-//   };
+
   const searchTickets = async () => {
     try {
       setError(null);
@@ -73,9 +60,13 @@ const TicketSearch = () => {
           params.append(key, value);
         }
       });
-
+      const token = localStorage.getItem("access_token");
       const response = await axios.get(
-        `http://localhost:3000/tickets/search?${params.toString()}`
+        `http://localhost:3000/tickets?${params.toString()}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (response.data.length > 0) {
@@ -123,7 +114,7 @@ const TicketSearch = () => {
         Search Tickets
       </Typography>
 
-      {/* Form Tìm kiếm */}
+    
       <Box
         sx={{
           display: "flex",
@@ -137,15 +128,7 @@ const TicketSearch = () => {
         }}
       >
         <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
-          <TextField
-            label="Ticket ID"
-            name="ticket_id"
-            value={query.ticket_id}
-            onChange={handleInputChange}
-            variant="outlined"
-            fullWidth
-          />
-          <TextField
+        <TextField
             label="Customer ID"
             name="customer_id"
             value={query.customer_id}
@@ -153,8 +136,6 @@ const TicketSearch = () => {
             variant="outlined"
             fullWidth
           />
-        </Box>
-        <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
           <TextField
             label="Flight ID"
             name="flight_id"
@@ -231,7 +212,7 @@ const TicketSearch = () => {
         </Box>
       </Box>
 
-      {/* Hiển thị lỗi nếu có */}
+    
       {error && (
         <Alert
           severity="warning"
@@ -245,7 +226,7 @@ const TicketSearch = () => {
         </Alert>
       )}
 
-      {/* Hiển thị bảng nếu có kết quả */}
+    
       {results.length > 0 && (
         <TableContainer
           component={Paper}

@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import axios from "axios";
-
+import "../../../color.css";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: "bold",
   backgroundColor: "#159F91",
@@ -62,7 +62,7 @@ export default function PostPromotions() {
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("access_token");
         const response = await axios.get("http://localhost:3000/promotions", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -150,7 +150,7 @@ export default function PostPromotions() {
         sx={{
           marginBottom: 2,
           textAlign: "center",
-          color: "#159F91",
+          color: "var(--primary-color)",
           fontWeight: "bold",
         }}
       >
@@ -158,7 +158,7 @@ export default function PostPromotions() {
       </Typography>
       <Button
         variant="contained"
-        sx={{ marginBottom: 2, backgroundColor: "#159F91", float: "right" }}
+        sx={{ marginBottom: 2, backgroundColor: "var(--primary-color)", float: "right" }}
         onClick={() => setOpenDialog(true)}
       >
         Add New Promotion
@@ -240,7 +240,7 @@ export default function PostPromotions() {
       >
         <DialogTitle
           sx={{
-            backgroundColor: "#159F91",
+            backgroundColor: "var(--primary-color)",
             color: "#ffffff",
             marginBottom: "20px",
           }}
@@ -308,7 +308,7 @@ export default function PostPromotions() {
             variant="contained"
             onClick={handleAddPromotion}
             sx={{
-              backgroundColor: "#159F91",
+              backgroundColor: "var(--primary-color)",
               color: "white",
               borderRadius: "8px",
               padding: "8px 16px",

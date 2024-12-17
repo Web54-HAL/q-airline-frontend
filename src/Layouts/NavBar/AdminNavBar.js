@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -7,13 +7,20 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
-import Image from "./logo.jpg"; // Path to your logo image
+import Image from "./logo.jpg";
 
 export default function Navbar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
   const open = Boolean(anchorEl);
   let navigate = useNavigate();
 
@@ -25,32 +32,41 @@ export default function Navbar() {
     setAnchorEl(null);
   };
 
+  const handleLogoutClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleLogout = () => {
+    setOpenDialog(false);
+    localStorage.removeItem("jwtToken");
+    navigate("/login");
+  };
+
   return (
     <AppBar
       position="sticky"
       sx={{
-        backgroundColor: "#159F91ff", // Navbar background color
+        backgroundColor: "#159F91ff",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between", paddingX: "16px" }}>
         {/* Logo Section */}
-        <Box
-          sx={{
-            cursor: "pointer",
-          }}
-          onClick={() => navigate("/")} // Logo navigates to Home
-        >
+        <Box sx={{ cursor: "pointer" }} onClick={() => navigate("/admin")}>
           <img
             src={Image}
             alt="Logo"
-            style={{
-              height: "70px",
-              width: "250px",
-              objectFit: "cover",
-            }}
+            style={{ height: "70px", width: "250px", objectFit: "cover" }}
           />
         </Box>
+
+        <Typography sx={{ color: "#C3FEFC", fontWeight: "bold" }}>
+          Logged in as Admin
+        </Typography>
 
         {/* Navigation Links */}
         <Box
@@ -64,54 +80,43 @@ export default function Navbar() {
         >
           <Button
             sx={{ color: "#ffffff", fontWeight: "bold" }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/admin/flight")}
           >
-            Home
+            Add Flight
           </Button>
           <Button
             sx={{ color: "#ffffff", fontWeight: "bold" }}
-            onClick={() => navigate("/search")}
+            onClick={() => navigate("/admin/plane")}
           >
-            Search
+            Add Plane
           </Button>
           <Button
             sx={{ color: "#ffffff", fontWeight: "bold" }}
-            onClick={() => {
-              const sliderSection = document.getElementById("slider");
-              if (sliderSection) {
-                sliderSection.scrollIntoView({ behavior: "smooth" });
-              }
-            }}
+            onClick={() => navigate("/admin/promotion")}
           >
-            New Posts
+            Promotion
+          </Button>
+          <Button
+            sx={{ color: "#ffffff", fontWeight: "bold" }}
+            onClick={() => navigate("/admin/ticket")}
+          >
+            Manage Ticket
           </Button>
         </Box>
 
-        {/* Login/Register */}
+        {/* Logout Button */}
         <Box sx={{ display: "flex", gap: "10px" }}>
-          <Button
-            variant="outlined"
-            sx={{
-              color: "#ffffff",
-              borderColor: "#ffffff",
-              fontWeight: "bold",
-              "&:hover": { backgroundColor: "#ffffff", color: "#1976D2" },
-            }}
-            onClick={() => navigate("/SignIn")}
-          >
-            Login
-          </Button>
           <Button
             variant="contained"
             sx={{
-              backgroundColor: "#080808",
+              backgroundColor: "#C3FEFC",
               color: "#1976D2",
               fontWeight: "bold",
               "&:hover": { backgroundColor: "#E3F2FD" },
             }}
-            onClick={() => navigate("/SignUp")}
+            onClick={handleLogoutClick}
           >
-            Register
+            Log Out
           </Button>
         </Box>
 
@@ -131,21 +136,30 @@ export default function Navbar() {
         onClose={handleMenuClose}
         sx={{ display: { xs: "block", md: "none" } }}
       >
-        <MenuItem onClick={() => navigate("/")}>Home</MenuItem>
-        <MenuItem onClick={() => navigate("/search")}>Search</MenuItem>
-        <MenuItem
-          onClick={() => {
-            const sliderSection = document.getElementById("slider");
-            if (sliderSection) {
-              sliderSection.scrollIntoView({ behavior: "smooth" });
-            }
-          }}
-        >
-          New Post
-        </MenuItem>
-        <MenuItem onClick={() => navigate("/SignIn")}>Login</MenuItem>
-        <MenuItem onClick={() => navigate("/SignUp")}>Register</MenuItem>
+        <MenuItem onClick={() => navigate("/admin/flight")}>Add Flight</MenuItem>
+        <MenuItem onClick={() => navigate("/admin/plane")}>Add Plane</MenuItem>
+        <MenuItem onClick={() => navigate("/admin/promotion")}>Promotion</MenuItem>
+        <MenuItem onClick={() => navigate("/admin/ticket")}>Manage Ticket</MenuItem>
+        <MenuItem onClick={handleLogoutClick}>Log Out</MenuItem>
       </Menu>
+
+      {/* Dialog Xác Nhận Log Out */}
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Confirm Log Out</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to log out?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogout} color="primary" autoFocus>
+            Log Out
+          </Button>
+        </DialogActions>
+      </Dialog>
     </AppBar>
   );
 }

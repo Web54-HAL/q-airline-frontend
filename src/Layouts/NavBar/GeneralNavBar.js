@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   AppBar,
   Toolbar,
@@ -23,6 +23,13 @@ export default function Navbar() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const sliderRef = useRef(null);
+  const handleScrollToSlider = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -76,12 +83,7 @@ export default function Navbar() {
           </Button>
           <Button
             sx={{ color: "#ffffff", fontWeight: "bold" }}
-            onClick={() => {
-              const sliderSection = document.getElementById("slider");
-              if (sliderSection) {
-                sliderSection.scrollIntoView({ behavior: "smooth" });
-              }
-            }}
+            onClick={handleScrollToSlider}
           >
             New Posts
           </Button>
@@ -104,7 +106,7 @@ export default function Navbar() {
           <Button
             variant="contained"
             sx={{
-              backgroundColor: "#080808",
+              backgroundColor: "#C3FEFC",
               color: "#1976D2",
               fontWeight: "bold",
               "&:hover": { backgroundColor: "#E3F2FD" },

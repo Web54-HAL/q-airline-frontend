@@ -11,39 +11,37 @@ import LayoutAdmin from "./Layouts/Admin/Main";
 import AddFlight from "./Pages/Admin/AddFlight/Main";
 import AddPlane from "./Pages/Admin/AddPlane/Main";
 import PostPromotions from "./Pages/Admin/PostPromotions/Main";
+import FlightTable from "./Pages/Search_Page/flight";
 import ManageTickets from "./Pages/Admin/ManageTickets/Main";
 export default function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Layouts />}>
-          {/* Qanh làm home */}
           <Route path="/" element={<HomePage />} />
-          {/* Qanh làm search*/}
           <Route path="search" element={<Search />} />
-          {/* xong */}
           <Route path="SignIn" element={<SignInSide />} />
-          {/* xong */}
           <Route path="SignUp" element={<SignUp />} />
+          {/* <Route path="flight" element={<FlightTable />} /> */}
+      
         </Route>
         <Route path="/user" element={<LayoutsUser />}>
-          <Route path="search" element={<Search />} />
+          <Route path="/user" element={<HomePage />} />
+          <Route path="/user/search" element={<Search />} />
           <Route
             path="booking/:flightId/:from/:to/:departureTime/:bookingDate"
             element={<Booking />}
           />
-          {/* xong */}
-          <Route path="dashboard" element={<BookingList />} />
+          <Route path="/user/bookinglist" element={<BookingList />} />
         </Route>
         <Route path="/admin" element={<LayoutAdmin />}>
-          {/* xong */}
+          <Route path="/admin" element={<HomePage />} />
           <Route path="flight" element={<AddFlight />} />
-        {/* xong */}
           <Route path="plane" element={<AddPlane />} />
-          {/* xong */}
           <Route path="promotion" element={<PostPromotions />} />
-          <Route path="ticket" element={<ManageTickets />} />
+          <Route path="ticket" element={<ManageTickets/>} />
         </Route>
+
       </Routes>
     </>
   );

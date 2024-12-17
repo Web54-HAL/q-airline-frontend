@@ -49,11 +49,6 @@
       "id": "44ab",
       "username": "",
       "password": ""
-    },
-    {
-      "id": "b198",
-      "username": "84346207893",
-      "password": "securepassword123"
     }
   ],
   "flights": [
@@ -78,7 +73,35 @@
       "id": "517a"
     }
   ],
-  "bookings": [
+  "bookings":[
+    {
+      "ticket_id": 101,
+      "customer_id": 1001,
+      "flight_id": 5001,
+      "from_pos": "DAD",
+      "to_pos": "HAN",
+      "time_start": "2024-12-20T14:00:00Z",
+      "plane_id": 3001,
+      "booking_date": "2024-12-15T10:00:00Z",
+      "adult_count": 2,
+      "children_count": 1,
+      "infant_count": 0,
+      "duration_min": 90
+    },
+    {
+      "ticket_id": 102,
+      "customer_id": 1002,
+      "flight_id": 5002,
+      "from_pos": "SGN",
+      "to_pos": "DAD",
+      "time_start": "2024-12-19T16:30:00Z",
+      "plane_id": 3002,
+      "booking_date": "2024-12-14T12:30:00Z",
+      "adult_count": 1,
+      "children_count": 0,
+      "infant_count": 0,
+      "duration_min": 75
+    },
     {
       "ticket_id": 103,
       "customer_id": 1003,
@@ -91,8 +114,7 @@
       "adult_count": 2,
       "children_count": 2,
       "infant_count": 1,
-      "duration_min": 100,
-      "id": "9e9e"
+      "duration_min": 100
     },
     {
       "ticket_id": 104,
@@ -106,10 +128,24 @@
       "adult_count": 3,
       "children_count": 0,
       "infant_count": 0,
-      "duration_min": 95,
-      "id": "1198"
+      "duration_min": 95
+    },
+    {
+      "ticket_id": 105,
+      "customer_id": 1005,
+      "flight_id": 5005,
+      "from_pos": "DAD",
+      "to_pos": "SGN",
+      "time_start": "2024-12-21T08:00:00Z",
+      "plane_id": 3005,
+      "booking_date": "2024-12-16T15:00:00Z",
+      "adult_count": 1,
+      "children_count": 1,
+      "infant_count": 0,
+      "duration_min": 85
     }
   ],
+  
   "search": [
     {
       "flight_ID": "VN123",

@@ -1,73 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Image1 from '../SignUp_Page/1.jpg';
-import Image2 from '../SignUp_Page/1.jpg';
-import Image3 from '../SignUp_Page/1.jpg';
-import './Main.css';
+import { Box, Container, Grid, Typography, Button, TextField, Avatar } from '@mui/material';
+import FlightIcon from '@mui/icons-material/FlightOutlined';
+import Image1 from './air1.jpeg';
+import Image2 from './air2.jpeg';
+import Image3 from './air3.jpeg';
+import React, { useEffect, useState, useRef } from 'react';
 
 const images = [Image1, Image2, Image3];
 
-function Main() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+function TravelLayout() {
 
+
+  const [currentIndex, setCurrentIndex] = useState(0);
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
-    }, 5000);
+      if (currentIndex === images.length - 1) {
+        setCurrentIndex(0);
+      }
+      else {
+        setCurrentIndex(currentIndex + 1);
+      }
+    }, 5000)
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [currentIndex])
+
+  const sliderRef = useRef(null);
+  const handleScrollToSlider = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
-    <main>
-      <Paper
-        className="main__paper"
-        style={{
-          backgroundImage: `url(${images[currentIndex]})`,
+    <Box>
+      <Container maxWidth="xl"
+        sx={{
+          backgroundImage: `url(${Image})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          width: '90%',
+          height: '120%',
+          marginTop: 2,
+          borderRadius: 5,
+          // marginBottom: '150px',
         }}
       >
-        <Box className="main__overlay" />
-        <Grid container>
-          <Grid item md={6}>
-            <Box className="main__content">
-              <Typography component="h1" className="main__title">
-                <center>B Airways</center>
-              </Typography>
-              <Typography className="main__subtitle">
-                <center>We fly you Everywhere</center>
-              </Typography>
-              <Grid container spacing={1} className="main__buttons-container">
-                <Grid item xs={12} sm={3}>
-                  <Typography align="right">
-                    <Button className="main__button">Register</Button>
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                  <Typography align="center">
-                    <Button className="main__button">Login</Button>
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                  <Typography align="left">
-                    <Button className="main__button">Proceed as a guest</Button>
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                  <Typography align="left">
-                    <Button className="main__button">Proceed as an Admin</Button>
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-          </Grid>
-        </Grid>
-      </Paper>
-    </main>
+        {/* Hero Section */}
+        <Box sx={{ position: 'relative', height: '60vh', backgroundImage: `url(${images[currentIndex]})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 5, }}>
+          <Box sx={{
+            position: 'absolute', color: '#fff', backgroundColor: 'rgba(0,0,0,.3)', height: '100%', width: { xs: '100%', sm: '50%', md: '35%' }, borderRadius: 5, display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center', // Căn giữa theo chiều dọc
+            alignItems: 'center'
+          }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }}>Explore</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', fontSize: '3rem', color: '#C3FEFC', fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>the world</Typography>
+            <br />
+            <Typography variant="h5" sx={{ fontWeight: 400, marginBottom: '20px', fontSize: { xs: '1rem', sm: '1.2rem', md: '1.5rem' } }}>
+              Your Journey - Our Priority!
+            </Typography>
+            <Button variant="contained"
+              onClick={handleScrollToSlider}
+              sx={{ backgroundColor: '#159F91', color: 'white', padding: '10px 20px', borderRadius: 5 }}>
+              Explore
+            </Button>
+          </Box>
+        </Box>
+      </Container>
+
+      <Container maxWidth="md"
+        sx={{
+          borderRadius: 5, height: "30%", marginTop: 2, marginBottom: 10, display: 'flex', flexDirection: 'column',
+          justifyContent: 'center', alignItems: "center", bgcolor: 'white', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+        }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold', fontSize: '1,5rem', color: 'black' }}>About us</Typography>
+        <Typography sx={{ textAlign: 'center' }} variant="body1"> At Q Airline, we are committed to providing you with an exceptional flying experience. As a leading airline, we specialize in offering comfort, reliability, and affordability, ensuring that your journey with us is smooth and enjoyable. Whether you're traveling for business or leisure, our modern fleet of aircraft, friendly crew, and top-tier services make us your preferred choice in the skies. </Typography>
+        <Button variant="contained" sx={{ backgroundColor: '#159F91', color: 'white', padding: '10px 20px', borderRadius: 5, marginTop: 2, marginBottom: 2 }}>
+          Our Highlight
+        </Button>
+      </Container>
+    </Box>
   );
 }
 
-export default Main;
+export default TravelLayout;

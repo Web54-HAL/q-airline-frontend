@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import NavBar from "../NavBar/GeneralNavBar"
+import NavBar from "../NavBar/UserNavbar";
 
 function LayoutsUser () {
     return (
