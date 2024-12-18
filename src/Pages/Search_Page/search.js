@@ -11,6 +11,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
@@ -19,6 +21,9 @@ import Image from "./airline1.jpg";
 import FlightResults from "./flight";
 
 export default function Search() {
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [formData, setFormData] = useState({
     from_pos: "",
     to_pos: "",
@@ -36,15 +41,15 @@ export default function Search() {
 
   useEffect(() => {
     const savedFlightList = sessionStorage.getItem("flightList");
-  const savedFormData = sessionStorage.getItem("formData");
+    const savedFormData = sessionStorage.getItem("formData");
 
-  if (savedFlightList) {
-    setFlightList(JSON.parse(savedFlightList));
-    setIsShown(true); 
-  }
-  if (savedFormData) {
-    setFormData(JSON.parse(savedFormData));
-  }
+    if (savedFlightList) {
+      setFlightList(JSON.parse(savedFlightList));
+      setIsShown(true);
+    }
+    if (savedFormData) {
+      setFormData(JSON.parse(savedFormData));
+    }
     const fetchLocations = async () => {
       try {
         const response = await axios.get("http://localhost:5000/locations");
@@ -66,7 +71,12 @@ export default function Search() {
   };
 
   const searchFlight = async () => {
-    if (!formData.from_pos || !formData.to_pos || !formData.date_start || !formData.passenger_seat_count) {
+    if (
+      !formData.from_pos ||
+      !formData.to_pos ||
+      !formData.date_start ||
+      !formData.passenger_seat_count
+    ) {
       setFullInformation("*All fields are required.");
       return;
     }
@@ -95,12 +105,15 @@ export default function Search() {
     const bookingDate = new Date().toISOString();
     sessionStorage.setItem("flightList", JSON.stringify(flightList));
     sessionStorage.setItem("formData", JSON.stringify(formData));
-   const token = localStorage.getItem('access_token');
-   if(token) {
-    navigate(`/user/booking/${row.flight_id}/${row.plane_id}/${row.from_pos}/${row.to_pos}/${row.time_start}/${row.duration_minute}/${bookingDate}`);
-   }
-    else {
-      navigate("/");
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      navigate(
+        `/user/booking/${row.flight_id}/${row.plane_id}/${row.from_pos}/${row.to_pos}/${row.time_start}/${row.duration_minute}/${bookingDate}`
+      );
+    } else {
+      setSnackbarMessage("Please log in first!");
+      setSnackbarSeverity("warning");
+      setOpenSnackbar(true);
     }
   };
 
@@ -135,7 +148,11 @@ export default function Search() {
           <Grid item xs={3}>
             <FormControl fullWidth>
               <InputLabel>From</InputLabel>
-              <Select name="from_pos" value={formData.from_pos} onChange={handleChange}>
+              <Select
+                name="from_pos"
+                value={formData.from_pos}
+                onChange={handleChange}
+              >
                 {locations.map((loc) => (
                   <MenuItem value={loc.name} key={loc.id}>
                     {loc.name}
@@ -148,7 +165,11 @@ export default function Search() {
           <Grid item xs={3}>
             <FormControl fullWidth>
               <InputLabel>To</InputLabel>
-              <Select name="to_pos" value={formData.to_pos} onChange={handleChange}>
+              <Select
+                name="to_pos"
+                value={formData.to_pos}
+                onChange={handleChange}
+              >
                 {locations.map((loc) => (
                   <MenuItem value={loc.name} key={loc.id}>
                     {loc.name}
@@ -195,7 +216,26 @@ export default function Search() {
       </Container>
 
       {/* Flight Results Table */}
-      {isShown && <FlightResults flightList={flightList} onBookFlight={handleBookFlight} />}
+      {isShown && (
+        <FlightResults
+          flightList={flightList}
+          onBookFlight={handleBookFlight}
+        />
+      )}
+      <Snackbar
+      open={openSnackbar}
+      autoHideDuration={4000}
+      onClose={() => setOpenSnackbar(false)}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+    >
+      <Alert
+        onClose={() => setOpenSnackbar(false)}
+        severity={snackbarSeverity}
+        sx={{ width: "100%" }}
+      >
+        {snackbarMessage}
+      </Alert>
+    </Snackbar>
     </Box>
   );
 }

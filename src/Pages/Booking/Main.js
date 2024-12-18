@@ -37,19 +37,16 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     },
   },
 }));
-const token = localStorage.getItem('access_token'); 
-let decodedToken = null;
+const token = localStorage.getItem("access_token" );
+      let decodedToken = null;
 
-if (token) {
-  try {
-    decodedToken = jwtDecode(token);
-    var customerId = decodedToken.userId;;
-  } catch (error) {
-    console.error("Token decoding failed:", error.message);
-  }
-} else {
-  console.warn("No token found in localStorage.");
-}
+      if (token) {
+        try {
+          decodedToken = jwtDecode(token);
+        } catch (error) {
+          console.error("Token decoding failed:", error.message);
+        }
+      } 
 const Booking = () => {
   // Extract URL parameters
   const location = useLocation();
@@ -62,7 +59,11 @@ const time_start = pathParts[7] || ""; // "2024-12-22T11:30:00+00:00"
 const duration_minute = pathParts[8] || ""; // "120"
 const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
-  
+
+
+  let customerId = decodedToken.userId;;
+ 
+
  
   const [formData, setFormData] = useState({
     adultCount: 1,
@@ -117,8 +118,6 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
   
     try {
     
-      const token = localStorage.getItem("access_token");
-  
       const response = await axios.post(
         "http://localhost:3000/tickets",
         bookingData,

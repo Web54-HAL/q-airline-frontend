@@ -119,8 +119,8 @@ export default function Slider() {
       >
         <CardMedia
           component="img"
-          height="210"
-          image={slide.preview_image_url}
+          height="220"
+          image={slide.preview_image_url || Image}
           alt={slide.title}
           sx={{ objectFit: "cover" }}
         />
@@ -132,7 +132,7 @@ export default function Slider() {
             background: "#ddd",
           }}
         >
-          <Typography variant="h6">{slide.title}</Typography>
+          <Typography variant="h7">{slide.title}</Typography>
         </CardContent>
       </Card>
     </SwiperSlide>

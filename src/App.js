@@ -22,16 +22,16 @@ export default function App() {
           <Route path="search" element={<Search />} />
           <Route path="SignIn" element={<SignInSide />} />
           <Route path="SignUp" element={<SignUp />} />
-          {/* <Route path="flight" element={<FlightTable />} /> */}
+          <Route path="flight" element={<FlightTable />} />
       
         </Route>
         <Route path="/user" element={<LayoutsUser />}>
           <Route path="" element={<HomePage />} />
           <Route path="search" element={<Search />} />
-          {/* <Route
+          <Route
           path="/user/booking/:flight_id/:plane_id/:from_pos/:to_pos/:time_start/:duration_minute/:bookingDate"
           element={<Booking />}
-        /> */}
+        />
           <Route path="bookinglist" element={<BookingList />} />
         </Route>
         <Route path="/admin" element={<LayoutAdmin />}>
