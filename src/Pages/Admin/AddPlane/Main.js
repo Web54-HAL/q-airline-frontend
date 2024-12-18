@@ -22,12 +22,37 @@ import axios from 'axios';
 import Image from '../../SignUp_Page/1.jpg';
 import styled from 'styled-components';
 import { tableCellClasses } from '@mui/material';
-
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import "../../../color.css";
 export default function AddPlane() {
   const [formData, setFormData] = useState({
     manufacturer: '',
     customer_seat_count: '',
   });
+  const handleEditOpen = (plane) => {
+    setDialogData({
+      manufacturer: plane.manufacturer,
+      customer_seat_count: plane.customer_seat_count,
+    });
+    setEditData(plane); // Lưu plane cần chỉnh sửa
+    setOpenDialog(true); // Mở dialog
+  };
+  
+  const handleEditClose = () => {
+    setOpenDialog(false);
+    setEditData(null);
+  };
+  
+
+  const [editData, setEditData] = useState(null); // Lưu thông tin dòng đang chỉnh sửa
+const [openDialog, setOpenDialog] = useState(false); // Trạng thái mở dialog
+const [dialogData, setDialogData] = useState({
+  manufacturer: "",
+  customer_seat_count: "",
+}); // Dữ liệu trong dialog
 
   const [planes, setPlanes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,21 +67,48 @@ export default function AddPlane() {
       [name]: value,
     }));
   };
+  // chưa xử lí edit
+  const handleUpdate = async () => {
+    const token = localStorage.getItem("access_token");
+  
+    try {
+      const response = await axios.patch(
+        `http://localhost:3000/planes/${editData.plane_id}`,
+        {
+          manufacturer: dialogData.manufacturer ,
+          customer_seat_count: Number(dialogData.customer_seat_count),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      setPlanes((prevPlanes) =>
+        prevPlanes.map((plane) =>
+          plane.plane_id === editData.plane_id
+            ? { ...plane, ...response.data } 
+            : plane
+        )
+      );
+      setSnackbarMessage("Plane updated successfully!");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
+      setOpenDialog(false); 
+      setEditData(null);
+    } catch (error) {
+      setSnackbarMessage("Failed to update plane.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+    }
+  };
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // Lấy token từ localStorage
     const token = localStorage.getItem("access_token");
   
-    // Kiểm tra token
-    if (!token) {
-      setSnackbarMessage("Authentication required. Please log in.");
-      setSnackbarSeverity("error");
-      setOpenSnackbar(true);
-      return;
-    }
+   
+    
   
-    // Validation dữ liệu đầu vào
     if (!formData.manufacturer || !formData.customer_seat_count) {
       setFullInformation('*All fields are required.');
       setSnackbarMessage('*All fields are required.');
@@ -83,25 +135,24 @@ export default function AddPlane() {
         'http://localhost:3000/planes',
         {
           manufacturer: formData.manufacturer,
-          customer_seat_count: Number(formData.customer_seat_count), // Đảm bảo seat count là số
+          customer_seat_count: Number(formData.customer_seat_count), 
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Đảm bảo định dạng JSON
+            "Content-Type": "application/json", 
           },
         }
       );
   
-      // Xử lý thành công
       console.log('Plane added successfully:', response.data);
   
-      // Hiển thị thông báo thành công
+     
       setSnackbarMessage('Plane added successfully!');
       setSnackbarSeverity('success');
       setOpenSnackbar(true);
   
-      // Cập nhật danh sách planes mà không cần gọi lại API
+     
       setPlanes((prevPlanes) => [...prevPlanes, response.data]);
   
       // Reset form
@@ -117,6 +168,24 @@ export default function AddPlane() {
       // Hiển thị thông báo lỗi
       setSnackbarMessage(errorMessage);
       setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+    }
+  };
+  const handleCancel = async (plane_id) => {
+    const token = localStorage.getItem("access_token");
+  
+    try {
+      await axios.delete(`http://localhost:3000/planes/${plane_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      setPlanes((prevPlanes) => prevPlanes.filter((plane) => plane.plane_id !== plane_id));
+      setSnackbarMessage("Plane canceled successfully!");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
+    } catch (error) {
+      setSnackbarMessage("Failed to cancel plane.");
+      setSnackbarSeverity("error");
       setOpenSnackbar(true);
     }
   };
@@ -142,51 +211,52 @@ export default function AddPlane() {
         setLoading(false);
       });
   }, []);
+  
   if (loading) {
-    return <div>Loading...</div>; // Hiển thị thông báo khi dữ liệu đang được tải
+    return <div>Loading...</div>; 
   }
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-      backgroundColor: '#159F91ff', // Blue color for the header
-      color: '#ffffff', // White text for better contrast
-      fontWeight: 'bold', // Make text bold
-      textAlign: 'center', // Center-align text in header
-      fontSize: '16px', // Slightly larger font size
+      backgroundColor: '#159F91ff', 
+      color: '#ffffff', 
+      fontWeight: 'bold', 
+      textAlign: 'center', 
+      fontSize: '16px', 
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
-      textAlign: 'center', // Center-align text in body
-      padding: '10px', // Add consistent padding
+      textAlign: 'center', 
+      padding: '10px', 
     },
   }));
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-      backgroundColor: '#f9f9f9', // Light gray for odd rows
+      backgroundColor: '#f9f9f9', 
     },
     '&:nth-of-type(even)': {
-      backgroundColor: '#ffffff', // White for even rows
+      backgroundColor: '#ffffff', 
     },
     '&:hover': {
-      backgroundColor: '#e3f2fd', // Light blue on hover
+      backgroundColor: '#e3f2fd', 
     },
     '&:last-child td, &:last-child th': {
-      border: 0, // Remove border for the last row
+      border: 0, 
     },
   }));
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ position: 'relative', width: '100%', height: '400px' }}>
-      {/* Ảnh nền */}
+   
       <Container
         sx={{
-          backgroundImage: `url(${Image})`, // Thay link ảnh thực tế
+          backgroundImage: `url(${Image})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           width: '100%',
           height: '120%',
-          marginTop: 12,
+          marginTop: 4,
           borderRadius: 2,
           marginBottom: '150px',
         }}
@@ -207,13 +277,13 @@ export default function AddPlane() {
           gap: 1,
           alignItems: 'center',
           width: '70%',
-          display: 'flex', // Sử dụng flexbox để căn giữa
-          flexDirection: 'column', // Sắp xếp các phần tử theo chiều dọc
-          justifyContent: 'center', // Căn giữa theo chiều ngang
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'center', 
           border: '5px solid #159F91ff',
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <Avatar sx={{ m: 1, bgcolor: "var(--primary-color)" }}>
           <FlightIcon />
         </Avatar>
         <Typography component="h1" variant="h5" sx={{ marginBottom: 2 }}>
@@ -274,8 +344,8 @@ export default function AddPlane() {
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: 300, // Giới hạn chiều cao bảng, tối đa 5 hàng
-            overflow: 'auto', // Kích hoạt thanh cuộn nếu có quá nhiều hàng
+            maxHeight: 300, 
+            overflow: 'auto', 
           }}
         >
           <Table>
@@ -284,32 +354,86 @@ export default function AddPlane() {
                 <StyledTableCell>ID</StyledTableCell>
                 <StyledTableCell>Manufacturer</StyledTableCell>
                 <StyledTableCell>Customer Seat Count</StyledTableCell>
+                <StyledTableCell>Actions</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {planes.map((plane) => (
-                <StyledTableRow key={plane.plane_id}>
-                  <StyledTableCell>{plane.plane_id}</StyledTableCell>
-                  <StyledTableCell>{plane.manufacturer}</StyledTableCell>
-                  <StyledTableCell>{plane.customer_seat_count}</StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
+  {planes.map((plane) => (
+    <TableRow key={plane.plane_id}>
+      <TableCell sx={{ textAlign: 'center' }}>{plane.plane_id}</TableCell>
+      <TableCell sx={{ textAlign: 'center' }}>{plane.manufacturer}</TableCell>
+      <TableCell sx={{ textAlign: 'center' }}>{plane.customer_seat_count}</TableCell>
+      <TableCell sx={{ width: '20%', textAlign: 'center' }}>
+        <Button
+          
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => handleEditOpen(plane)}
+          sx={{ marginRight: 1, bgcolor: "var(--primary-color)" }}
+        >
+          Edit 
+        </Button>
+        <Button
+        
+          variant="outlined"
+          color="error"
+          size="small"
+          onClick={() => handleCancel(plane.plane_id)}
+        >
+          Delete
+        </Button>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
           </Table>
         </TableContainer>
       </Container>
+{/* Dialog để chỉnh sửa Manufacturer và Seat Count */}
+<Dialog open={openDialog} onClose={handleEditClose}>
+  <DialogTitle>Edit Plane</DialogTitle>
+  <DialogContent>
+    <TextField
+      label="Manufacturer"
+      value={dialogData.manufacturer}
+      onChange={(e) => setDialogData({ ...dialogData, manufacturer: e.target.value })}
+      fullWidth
+      margin="normal"
+    />
+    <TextField
+      label="Customer Seat Count"
+      type="number"
+      value={dialogData.customer_seat_count}
+      onChange={(e) =>
+        setDialogData({ ...dialogData, customer_seat_count: e.target.value })
+      }
+      fullWidth
+      margin="normal"
+    />
+  </DialogContent>
+  <DialogActions  >
+    <Button onClick={handleEditClose} color="error">
+      Cancel
+    </Button>
+    <Button onClick={handleUpdate} color="primary">
+      Save
+    </Button>
+  </DialogActions>
+</Dialog>
 
       {/* Snackbar để hiển thị thông báo */}
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={3000} // Thời gian hiển thị Snackbar
-        onClose={() => setOpenSnackbar(false)} // Đóng Snackbar sau khi thời gian trôi qua
+        autoHideDuration={3000} 
+        onClose={() => setOpenSnackbar(false)} 
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: 'bottem',
+          horizontal: 'left',
         }}
       >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}  sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

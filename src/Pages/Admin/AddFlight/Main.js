@@ -34,6 +34,7 @@ export default function AddFlight() {
     time_start: "",
     duration_minute: "",
   });
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const [fullInformation, setFullInformation] = useState("");
   const [flights, setFlights] = useState([]);
@@ -110,68 +111,83 @@ export default function AddFlight() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setSnackbarMessage("Authentication token is missing. Please log in.");
+      setOpenSnackbar(true);
+      return;
+    }
+  
     const now = new Date();
     const inputTime = new Date(formData.time_start);
   
-    if (inputTime < now) {
-      alert("Time start must not be earlier than the current time.");
+    if (inputTime <= now) {
+      setSnackbarMessage("Departure time must be in the future.");
+      setOpenSnackbar(true);
       return;
     }
   
     const duration = parseInt(formData.duration_minute, 10);
-  
     if (!Number.isInteger(duration) || duration <= 0) {
-      alert("Duration must be a positive integer.");
+      setSnackbarMessage("Duration must be a positive integer.");
+      setOpenSnackbar(true);
+      return;
+    }
+  
+    const totalPassengers = parseInt(formData.total_passengers, 10);
+    if (!Number.isInteger(totalPassengers) || totalPassengers <= 0) {
+      setSnackbarMessage("Total passengers must be a positive integer.");
+      setOpenSnackbar(true);
       return;
     }
   
     if (
-      !formData.plane_id ||
-      !formData.from_pos ||
-      !formData.to_pos ||
-      !formData.time_start ||
-      !formData.duration_minute
+      !formData.flight_id.trim() ||
+      !formData.plane_id.trim() ||
+      !formData.from_pos.trim() ||
+      !formData.to_pos.trim() ||
+      !formData.time_start.trim() ||
+      !formData.duration_minute.trim()
     ) {
-      setFullInformation("*All fields are required.");
+      setSnackbarMessage("All fields are required.");
+      setOpenSnackbar(true);
       return;
     }
   
-    const token = localStorage.getItem("access_token");
+    if (flights.some((flight) => flight.flight_id === formData.flight_id)) {
+      setSnackbarMessage("Flight ID already exists. Please use a unique ID.");
+      setOpenSnackbar(true);
+      return;
+    }
   
     try {
-      console.log("Dữ liệu formData gửi đi:", formData);
-
-      const response = await axios.post(
-        "http://localhost:3000/flights",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      setSnackbarMessage("Flight added successfully!");
-      setOpenSnackbar(true);
+      const response = await axios.post("http://localhost:3000/flights", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
   
       setFlights((prevFlights) => [...prevFlights, response.data]);
-  
       setFormData({
-        total_passengers: "",
+        flight_id: "",
         plane_id: "",
         from_pos: "",
         to_pos: "",
         time_start: "",
         duration_minute: "",
+        total_passengers: "",
       });
   
-      setFullInformation("");
-    } catch (error) {
-      console.error("Error adding flight:", error);
-      setSnackbarMessage("Failed to add flight.");
+      setSnackbarMessage("Flight added successfully!");
       setOpenSnackbar(true);
+    } catch (error) {
+      console.error("Error adding flight:", error.response?.data || error.message);
+      setSnackbarMessage(
+        error.response?.data?.message || "Failed to add flight. Please try again."
+      );
+      setOpenSnackbar(true);
+      setSnackbarSeverity("error"); // Đặt màu đỏ cho Snackbar khi lỗi
     }
   };
+  
   
 
   const handleEditClick = (flight) => {
@@ -464,22 +480,23 @@ export default function AddFlight() {
       </Dialog>
 
       <Snackbar
-        open={openSnackbar}
-        autoHideDuration={3000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+  open={openSnackbar}
+  autoHideDuration={3000}
+  onClose={() => setOpenSnackbar(false)}
+  anchorOrigin={{
+    vertical: "bottom",
+    horizontal: "left",
+  }}
+>
+  <Alert
+    onClose={() => setOpenSnackbar(false)}
+    severity={snackbarSeverity}
+    sx={{ width: "100%" }}
+  >
+    {snackbarMessage}
+  </Alert>
+</Snackbar>
+
     </Box>
   );
 }

@@ -4,7 +4,7 @@ import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 //import Image from "./5.jpg";
 
 const Ticket = ({
-    ticket_id,
+  ticket_id,
   flight_id,
   from_pos,
   to_pos,
@@ -19,15 +19,14 @@ const Ticket = ({
   infantCount,
 }) => {
   return (
-    <Container maxWidth="sm" sx={{ mt: 2 }}> {/* Giảm kích thước Container */}
+    <Container maxWidth="sm" sx={{ mt: 2 }}>
       <Paper
         elevation={3}
         sx={{
-            
           position: "relative",
-          borderRadius: "8px", // Giảm border radius
+          borderRadius: "8px",
           overflow: "hidden",
-          p: 2, // Giảm padding của Paper
+          p: 2,
           zIndex: 1,
           "&::before": {
             content: '""',
@@ -40,7 +39,7 @@ const Ticket = ({
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            zIndex: -1, // Đặt phía sau nội dung
+            zIndex: -1,
           },
         }}
       >
@@ -48,11 +47,11 @@ const Ticket = ({
         <Box
           sx={{
             textAlign: "center",
-            mb: 2, // Giảm margin bottom
+            mb: 2,
             bgcolor: "var(--primary-color)",
             color: "white",
-            borderRadius: "6px", // Giảm border radius của header
-            p: 1, // Giảm padding
+            borderRadius: "6px",
+            p: 1,
           }}
         >
           <Avatar
@@ -61,25 +60,36 @@ const Ticket = ({
               color: "var(--primary-color)",
               mx: "auto",
               mb: 1,
-              width: 40, // Giảm kích thước Avatar
+              width: 40,
               height: 40,
             }}
           >
-            <FlightTakeoffIcon sx={{ fontSize: 24 }} /> {/* Giảm kích thước Icon */}
+            <FlightTakeoffIcon sx={{ fontSize: 24 }} />
           </Avatar>
-          <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "16px" }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", fontSize: "16px" }}
+          >
             Ticket Details
           </Typography>
         </Box>
 
         {/* Flight Information */}
         <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, fontSize: "14px", color: "var(--primary-color)" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              mb: 1,
+              fontSize: "14px",
+              color: "var(--primary-color)",
+            }}
+          >
             Flight Information
           </Typography>
           <Grid container spacing={1}>
             <Grid item xs={12} sm={6}>
-            <Typography sx={{ fontSize: "12px" }}>
+              <Typography sx={{ fontSize: "12px" }}>
                 <strong>Ticket ID:</strong> {ticket_id}
               </Typography>
               <Typography sx={{ fontSize: "12px" }}>
@@ -111,20 +121,34 @@ const Ticket = ({
 
         {/* Customer Information */}
         <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, fontSize: "14px", color: "var(--primary-color)" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              mb: 1,
+              fontSize: "14px",
+              color: "var(--primary-color)",
+            }}
+          >
             Customer Information
           </Typography>
           <Typography sx={{ fontSize: "12px" }}>
             <strong>Customer ID:</strong> {customerId}
           </Typography>
-          <Typography sx={{ fontSize: "12px" }}>
-            <strong>Email:</strong> {email}
-          </Typography>
+          
         </Box>
 
         {/* Passenger Count */}
         <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, fontSize: "14px", color: "var(--primary-color)" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              mb: 1,
+              fontSize: "14px",
+              color: "var(--primary-color)",
+            }}
+          >
             Passenger Count
           </Typography>
           <Grid container spacing={1}>

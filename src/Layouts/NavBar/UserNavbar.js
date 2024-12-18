@@ -42,7 +42,7 @@ export default function Navbar() {
   const handleLogout = () => {
     setOpenDialog(false);
     localStorage.removeItem("access_token");
-    navigate("/SignIn");
+    navigate("/");
   };
 
   return (

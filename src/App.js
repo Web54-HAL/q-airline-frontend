@@ -26,16 +26,16 @@ export default function App() {
       
         </Route>
         <Route path="/user" element={<LayoutsUser />}>
-          <Route path="/user" element={<HomePage />} />
-          <Route path="/user/search" element={<Search />} />
+          <Route path="" element={<HomePage />} />
+          <Route path="search" element={<Search />} />
           <Route
             path="booking/:flightId/:from/:to/:departureTime/:bookingDate"
             element={<Booking />}
           />
-          <Route path="/user/bookinglist" element={<BookingList />} />
+          <Route path="bookinglist" element={<BookingList />} />
         </Route>
         <Route path="/admin" element={<LayoutAdmin />}>
-          <Route path="/admin" element={<HomePage />} />
+          <Route path="" element={<HomePage />} />
           <Route path="flight" element={<AddFlight />} />
           <Route path="plane" element={<AddPlane />} />
           <Route path="promotion" element={<PostPromotions />} />

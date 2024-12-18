@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -54,20 +53,20 @@ export default function SignInSide() {
       });
   
       if (response.status === 200) {
-        // Lưu token vào localStorage
+      
         const token = response.data.access_token;
         localStorage.setItem("access_token", token);
   
-        // Giải mã token để xem thông tin
+       
         try {
-          const decodedToken = jwtDecode(token); // Giải mã token
+          const decodedToken = jwtDecode(token); 
           console.log("Decoded Token:", decodedToken);
   
-          // Kiểm tra role và điều hướng
+          
           if (decodedToken.role === "Admin") {
-            navigate("/admin/dashboard"); // Điều hướng đến trang Admin Dashboard
+            navigate("/admin"); 
           } else {
-            navigate("/user/dashboard"); // Điều hướng đến trang User Dashboard
+            navigate("/user"); 
           }
         } catch (decodeError) {
           console.error("Error decoding token:", decodeError);

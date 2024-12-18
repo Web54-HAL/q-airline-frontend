@@ -43,7 +43,7 @@ export default function Navbar() {
   const handleLogout = () => {
     setOpenDialog(false);
     localStorage.removeItem("jwtToken");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
