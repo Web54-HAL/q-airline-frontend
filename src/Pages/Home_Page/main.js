@@ -4,8 +4,12 @@ import Slider from "./Banner";
 const HomePage = () => {
   return (
     <div>
-      <Main />
-      <Slider id="slider"/>
+      <div>
+        <Main />
+      </div>
+      <div id="slider">
+        <Slider id="slider" />
+      </div>
     </div>
   );
 };

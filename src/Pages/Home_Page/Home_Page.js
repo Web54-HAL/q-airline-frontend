@@ -4,6 +4,7 @@ import Image1 from './air1.jpeg';
 import Image2 from './air2.jpeg';
 import Image3 from './air3.jpeg';
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 
 const images = [Image1, Image2, Image3];
 
@@ -11,6 +12,7 @@ function TravelLayout() {
 
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  let navigate = useNavigate();
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (currentIndex === images.length - 1) {
@@ -28,6 +30,13 @@ function TravelLayout() {
   const handleScrollToSlider = () => {
     if (sliderRef.current) {
       sliderRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const scrollToSection = () => {
+    const section = document.getElementById('slider');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -60,7 +69,7 @@ function TravelLayout() {
               Your Journey - Our Priority!
             </Typography>
             <Button variant="contained"
-              onClick={handleScrollToSlider}
+              onClick={scrollToSection}
               sx={{ backgroundColor: '#159F91', color: 'white', padding: '10px 20px', borderRadius: 5 }}>
               Explore
             </Button>
@@ -75,9 +84,6 @@ function TravelLayout() {
         }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', fontSize: '1,5rem', color: 'black' }}>About us</Typography>
         <Typography sx={{ textAlign: 'center' }} variant="body1"> At Q Airline, we are committed to providing you with an exceptional flying experience. As a leading airline, we specialize in offering comfort, reliability, and affordability, ensuring that your journey with us is smooth and enjoyable. Whether you're traveling for business or leisure, our modern fleet of aircraft, friendly crew, and top-tier services make us your preferred choice in the skies. </Typography>
-        <Button variant="contained" sx={{ backgroundColor: '#159F91', color: 'white', padding: '10px 20px', borderRadius: 5, marginTop: 2, marginBottom: 2 }}>
-          Our Highlight
-        </Button>
       </Container>
     </Box>
   );

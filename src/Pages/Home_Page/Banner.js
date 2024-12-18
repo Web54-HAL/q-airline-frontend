@@ -15,7 +15,6 @@ export default function Slider() {
   const [selectedMarkdown, setSelectedMarkdown] = useState("");
 
   useEffect(() => {
-    // Fetch promotions from JSON Server
     const fetchPromotions = async () => {
       try {
         const response = await axios.get("http://localhost:3000/promotions/newest?limit=6");
@@ -67,9 +66,10 @@ export default function Slider() {
     color: "var(--primary-color)",
     textShadow: "1px 1px 3px rgba(0, 0, 0, 0.3)",
     letterSpacing: "1.5px",
+    marginTop:5,
   }}
 >
-  Let's Flight with Us
+  Our Highlight
 </Typography>
     <Swiper
   slidesPerView={1} 
@@ -138,9 +138,6 @@ export default function Slider() {
     </SwiperSlide>
   ))}
 </Swiper>
-
-
-      {/* Markdown Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogContent>
           <ReactMarkdown>{selectedMarkdown}</ReactMarkdown>
