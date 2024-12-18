@@ -20,6 +20,7 @@ import {
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import axios from "axios";
 import "../../color.css";
+import { jwtDecode } from "jwt-decode";
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
@@ -36,36 +37,26 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     },
   },
 }));
-
+const token = localStorage.getItem('access_token'); 
+  const decodedToken = jwtDecode(token);
 const Booking = () => {
   // Extract URL parameters
   const location = useLocation();
   const pathParts = location.pathname.split("/");
-  const flight_id = pathParts[3] || "";
-  const from_pos = decodeURIComponent(pathParts[4] || "");
-  const to_pos = decodeURIComponent(pathParts[5] || "");
-  const time_start = pathParts[6] || "";
-  const bookingDate = pathParts[7] || "";
-  const plane_id = pathParts[8] || "";
-  const duration_minute = pathParts[9] || "";
+  const flight_id = pathParts[3] || ""; // "50"
+const plane_id = pathParts[4] || ""; // "10"
+const from_pos = pathParts[5] || ""; // "HAN"
+const to_pos = pathParts[6] || ""; // "SGN"
+const time_start = pathParts[7] || ""; // "2024-12-22T11:30:00+00:00"
+const duration_minute = pathParts[8] || ""; // "120"
+const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
 
-  // Decode access_token
-  //const token = localStorage.getItem("access_token");
-  let customerId = "";
-  let email = "";
 
-  // if (token) {
-  //   try {
-  //     const decodedToken = jwt_decode(token);
-  //     customerId = decodedToken.customer_id || "Unknown ID";
-  //     email = decodedToken.email || "Unknown Email";
-  //   } catch (error) {
-  //     console.error("Error decoding token:", error);
-  //   }
-  // }
+  let customerId = decodedToken.userId;;
+ 
 
-  // State for passenger details and form data
+ 
   const [formData, setFormData] = useState({
     adultCount: 1,
     childCount: 0,
@@ -118,14 +109,11 @@ const Booking = () => {
     };
   
     try {
-      // Retrieve JWT token from localStorage
+    
       const token = localStorage.getItem("access_token");
-      if (!token) {
-        throw new Error("No authentication token found. Please log in.");
-      }
   
       const response = await axios.post(
-        "http://localhost:3000/tickets/book",
+        "http://localhost:3000/tickets/booked",
         bookingData,
         {
           headers: {
@@ -140,8 +128,12 @@ const Booking = () => {
         setSnackbarOpen(true);
       }
     } catch (error) {
+      if (error.response) {
+        setSnackbarMessage(`Booking failed: ${error.response.data.message}`);
+        console.log(error.response.data);
+      } 
       console.error("Booking failed:", error);
-      setSnackbarMessage("Booking failed, please try again later.");
+      //setSnackbarMessage("Booking failed, please try again later.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
@@ -152,6 +144,7 @@ const Booking = () => {
       <Paper
         elevation={3}
         sx={{
+          mb : 5,
           borderRadius: "12px",
           overflow: "hidden",
           p: 3,
@@ -212,7 +205,7 @@ const Booking = () => {
                 <strong>Departure Time:</strong> {time_start}
               </Typography>
               <Typography>
-                <strong>Duration minutes:</strong> {time_start}
+                <strong>Duration minutes:</strong> {duration_minute}
               </Typography>
               <Typography>
                 <strong>Booking Date:</strong> {bookingDate}
@@ -228,9 +221,6 @@ const Booking = () => {
           </Typography>
           <Typography>
             <strong>Customer ID:</strong> {customerId}
-          </Typography>
-          <Typography>
-            <strong>Email:</strong> {email}
           </Typography>
         </Box>
 

@@ -46,7 +46,7 @@ const BookingList = () => {
   const handleConfirmCancel = async () => {
     try {
       const token = localStorage.getItem('access_token'); 
-      await axios.delete(`http://localhost:3000/tickets/cancel${selectedBooking.ticket_id}`, {
+      await axios.delete(`http://localhost:3000/tickets/cancel/${selectedBooking.ticket_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,8 +60,8 @@ const BookingList = () => {
   };
   
 
-  const handleOpenDialog = (bookingId) => {
-    setSelectedBooking(bookingId);
+  const handleOpenDialog = (booking) => {
+    setSelectedBooking(booking);
     setOpen(true);
   };
 
@@ -264,7 +264,7 @@ const BookingList = () => {
   <Button
     variant="contained"
     color="secondary"
-    onClick={() => handleOpenDialog(booking.id)}
+    onClick={() => handleOpenDialog(booking)}
   >
     Cancel
   </Button>

@@ -188,6 +188,24 @@
       "id": "a30b"
     }
   ],
+  "locations": [
+    {
+      "id": 1,
+      "name": "SGN"
+    },
+    {
+      "id": 2,
+      "name": "HAN"
+    },
+    {
+      "id": 3,
+      "name": "DAD"
+    },
+    {
+      "id": 4,
+      "name": "VCA"
+    }
+  ],
   "promotions": [
     {
       "promotion_id": 1,
