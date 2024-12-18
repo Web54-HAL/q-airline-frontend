@@ -95,7 +95,13 @@ export default function Search() {
     const bookingDate = new Date().toISOString();
     sessionStorage.setItem("flightList", JSON.stringify(flightList));
     sessionStorage.setItem("formData", JSON.stringify(formData));
+   const token = localStorage.getItem('access_token');
+   if(token) {
     navigate(`/user/booking/${row.flight_id}/${row.plane_id}/${row.from_pos}/${row.to_pos}/${row.time_start}/${row.duration_minute}/${bookingDate}`);
+   }
+    else {
+      navigate("/");
+    }
   };
 
   return (
