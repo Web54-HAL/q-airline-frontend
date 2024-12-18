@@ -120,7 +120,7 @@ export default function Slider() {
         <CardMedia
           component="img"
           height="210"
-          image={Image}
+          image={slide.preview_image_url}
           alt={slide.title}
           sx={{ objectFit: "cover" }}
         />
