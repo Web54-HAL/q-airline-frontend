@@ -37,12 +37,12 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     },
   },
 }));
+let decodedToken = null;
 const token = localStorage.getItem("access_token" );
-      let decodedToken = null;
-
       if (token) {
         try {
           decodedToken = jwtDecode(token);
+          console.log(decodedToken);
         } catch (error) {
           console.error("Token decoding failed:", error.message);
         }
@@ -61,9 +61,25 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
 
 
-  let customerId = decodedToken.userId;;
+  let customer_id = decodedToken.userId;;
  
-
+  function formatDateWith12Hour(dateString) {
+    const date = new Date(dateString);
+  
+    // Lấy ngày theo định dạng YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+  
+    // Định dạng giờ 12 giờ với AM/PM
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    };
+    const formattedTime = date.toLocaleString('en-US', options);
+  
+    // Kết hợp ngày và giờ
+    return `${formattedDate} ${formattedTime}`;
+  }
  
   const [formData, setFormData] = useState({
     adultCount: 1,
@@ -110,25 +126,28 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
       bookingDate,
       duration_minute,
       plane_id,
-      customerId,
-      adultCount: formData.adultCount,
-      childCount: formData.childCount,
-      infantCount: formData.infantCount,
+      customer_id,
+      adult_count: formData.adultCount,
+      children_count: formData.childCount,
+      infant_count: formData.infantCount,
     };
   
     try {
-    
+      console.log(token);
+      console.log(bookingData);
       const response = await axios.post(
-        "http://localhost:3000/tickets",
+        "http://localhost:3000/tickets/book",
         bookingData,
         {
           headers: {
             Authorization: `Bearer ${token}`, 
           },
         }
+        
       );
   
-      if (response.status === 200) {
+      if (response.status === 201) {
+        console.log(response);
         setSnackbarMessage("Booking successful!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
@@ -208,7 +227,7 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography>
-                <strong>Departure Time:</strong> {time_start}
+                <strong>Departure Time:</strong> {formatDateWith12Hour(time_start)}
               </Typography>
               <Typography>
                 <strong>Duration minutes:</strong> {duration_minute}
@@ -226,7 +245,7 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
             Customer Information
           </Typography>
           <Typography>
-            <strong>Customer ID:</strong> {customerId}
+            <strong>Customer ID:</strong> {customer_id}
           </Typography>
         </Box>
 

@@ -52,7 +52,7 @@ export default function Search() {
     }
     const fetchLocations = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/locations");
+        const response = await axios.get("http://localhost:3000/position-map");
         setLocations(response.data);
       } catch (error) {
         console.error("Error fetching locations:", error);
@@ -154,8 +154,8 @@ export default function Search() {
                 onChange={handleChange}
               >
                 {locations.map((loc) => (
-                  <MenuItem value={loc.name} key={loc.id}>
-                    {loc.name}
+                  <MenuItem value={loc.position_code} key={loc.position_code}>
+                  {loc.real_position}
                   </MenuItem>
                 ))}
               </Select>
@@ -171,8 +171,8 @@ export default function Search() {
                 onChange={handleChange}
               >
                 {locations.map((loc) => (
-                  <MenuItem value={loc.name} key={loc.id}>
-                    {loc.name}
+                  <MenuItem value={loc.position_code} key={loc.position_code}>
+                    {loc.real_position}
                   </MenuItem>
                 ))}
               </Select>
