@@ -70,7 +70,23 @@ const BookingList = () => {
     setSelectedBooking(null);
   };
 
+  function formatDateWith12Hour(dateString) {
+    const date = new Date(dateString);
   
+    // Lấy ngày theo định dạng YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+  
+    // Định dạng giờ 12 giờ với AM/PM
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    };
+    const formattedTime = date.toLocaleString('en-US', options);
+  
+    // Kết hợp ngày và giờ
+    return `${formattedDate} ${formattedTime}`;
+  }
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -243,8 +259,8 @@ const BookingList = () => {
                 flight_id={booking.flight_id}
                 from_pos={booking.from_pos}
                 to_pos={booking.to_pos}
-                time_start={booking.time_start}
-                bookingDate={booking.booking_date}
+                time_start={formatDateWith12Hour(booking.time_start)}
+                bookingDate={formatDateWith12Hour(booking.booking_date)}
                 plane_id={booking.plane_id}
                 duration_minute={booking.duration_minute}
                 customerId={booking.customer_id}

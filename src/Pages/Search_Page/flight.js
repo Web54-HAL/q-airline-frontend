@@ -1,13 +1,28 @@
 import React from "react";
 import {
+  Card,
+  CardContent,
   Typography,
   Button,
   Grid,
   Box,
   Divider
 } from "@mui/material";
+// import styled from "styled-components";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import styled from "@emotion/styled";
+
+// Styled components
+const FlightCard = styled(Card)(({ theme }) => ({
+  border: "1px solid #e0e0e0",
+  borderRadius: "12px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  transition: "transform 0.2s ease-in-out",
+  "&:hover": {
+    transform: "scale(1.02)",
+  },
+  padding: "10px",
+}));
 
 const TicketContainer = styled(Box)({
   backgroundColor: "#E1F5FE",
@@ -176,6 +191,7 @@ const FlightResults = ({ flightList, onBookFlight }) => {
                   sx={{
                     display: "flex",
                     justifyContent: { xs: "center", md: "center" },
+                    // marginBottom:4,
                     marginTop: 2,
                   }}
                 >
@@ -183,6 +199,10 @@ const FlightResults = ({ flightList, onBookFlight }) => {
                     variant="contained"
                     color="primary"
                     onClick={() => onBookFlight(row)}
+                    // sx={{
+                    //   backgroundColor: "#159F91ff",
+                    //   "&:hover": { backgroundColor: "#107866" },
+                    // }}
                   >
                     Book
                   </Button>

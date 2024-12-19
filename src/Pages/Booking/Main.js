@@ -37,7 +37,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     },
   },
 }));
-let decodedToken = null;
+let decodedToken = "";
 const token = localStorage.getItem("access_token" );
       if (token) {
         try {
@@ -233,7 +233,7 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
                 <strong>Duration minutes:</strong> {duration_minute}
               </Typography>
               <Typography>
-                <strong>Booking Date:</strong> {bookingDate}
+                <strong>Booking Date:</strong> {formatDateWith12Hour(bookingDate)}
               </Typography>
             </Grid>
           </Grid>

@@ -11,19 +11,15 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Snackbar,
-  Alert
+  styled,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Image from "./airline1.jpg";
+import Image from "./searchbg.jpg";
 import FlightResults from "./flight";
 
 export default function Search() {
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [formData, setFormData] = useState({
     from_pos: "",
     to_pos: "",
@@ -41,15 +37,15 @@ export default function Search() {
 
   useEffect(() => {
     const savedFlightList = sessionStorage.getItem("flightList");
-    const savedFormData = sessionStorage.getItem("formData");
+  const savedFormData = sessionStorage.getItem("formData");
 
-    if (savedFlightList) {
-      setFlightList(JSON.parse(savedFlightList));
-      setIsShown(true);
-    }
-    if (savedFormData) {
-      setFormData(JSON.parse(savedFormData));
-    }
+  if (savedFlightList) {
+    setFlightList(JSON.parse(savedFlightList));
+    setIsShown(true); 
+  }
+  if (savedFormData) {
+    setFormData(JSON.parse(savedFormData));
+  }
     const fetchLocations = async () => {
       try {
         const response = await axios.get("http://localhost:3000/position-map");
@@ -71,12 +67,7 @@ export default function Search() {
   };
 
   const searchFlight = async () => {
-    if (
-      !formData.from_pos ||
-      !formData.to_pos ||
-      !formData.date_start ||
-      !formData.passenger_seat_count
-    ) {
+    if (!formData.from_pos || !formData.to_pos || !formData.date_start || !formData.passenger_seat_count) {
       setFullInformation("*All fields are required.");
       return;
     }
@@ -101,21 +92,63 @@ export default function Search() {
     }
   };
 
+  function formatDateWith12Hour(dateString) {
+    const date = new Date(dateString);
+  
+    // Lấy ngày theo định dạng YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+  
+    // Định dạng giờ 12 giờ với AM/PM
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    };
+    const formattedTime = date.toLocaleString('en-US', options);
+  
+    // Kết hợp ngày và giờ
+    return `${formattedDate} ${formattedTime}`;
+  }
+
   const handleBookFlight = (row) => {
     const bookingDate = new Date().toISOString();
     sessionStorage.setItem("flightList", JSON.stringify(flightList));
     sessionStorage.setItem("formData", JSON.stringify(formData));
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      navigate(
-        `/user/booking/${row.flight_id}/${row.plane_id}/${row.from_pos}/${row.to_pos}/${row.time_start}/${row.duration_minute}/${bookingDate}`
-      );
-    } else {
-      setSnackbarMessage("Please log in first!");
-      setSnackbarSeverity("warning");
-      setOpenSnackbar(true);
-    }
+    navigate(`/user/booking/${row.flight_id}/${row.plane_id}/${row.from_pos}/${row.to_pos}/${row.time_start}/${row.duration_minute}/${bookingDate}`);
   };
+
+  const StyledTextField = styled(TextField)(({ theme }) => ({
+    "& .MuiOutlinedInput-root": {
+      borderBottom: "2px solid var(--primary-color)",
+      borderRadius: 0,
+      "& fieldset": {
+        border: "none",
+      },
+      "&:hover fieldset": {
+        border: "none",
+      },
+      "&.Mui-focused fieldset": {
+        border: "none",
+      },
+    },
+  }));
+
+  const StyledFormControl = styled(FormControl)(({ theme }) => ({
+    "& .MuiOutlinedInput-root": {
+      borderBottom: "2px solid var(--primary-color)",
+      borderRadius: 0,
+      "& fieldset": {
+        border: "none",
+      },
+      "&:hover fieldset": {
+        border: "none",
+      },
+      "&.Mui-focused fieldset": {
+        border: "none",
+      },
+    },
+  }));
+
 
   return (
     <Box
@@ -128,12 +161,16 @@ export default function Search() {
       }}
     >
       <Container
-        maxWidth="lg"
+        maxWidth="md"
         sx={{
           backgroundColor: "rgba(255, 255, 255, 0.8)",
           padding: 2,
           borderRadius: 1,
           marginTop: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyItems: "center",
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -145,42 +182,34 @@ export default function Search() {
 
         {/* Form Input */}
         <Grid container spacing={2}>
-          <Grid item xs={3}>
-            <FormControl fullWidth>
+          <Grid item xs={6} sm={6} md={2.5}>
+            <StyledFormControl fullWidth>
               <InputLabel>From</InputLabel>
-              <Select
-                name="from_pos"
-                value={formData.from_pos}
-                onChange={handleChange}
-              >
-                {locations.map((loc) => (
-                  <MenuItem value={loc.position_code} key={loc.position_code}>
-                  {loc.real_position}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={3}>
-            <FormControl fullWidth>
-              <InputLabel>To</InputLabel>
-              <Select
-                name="to_pos"
-                value={formData.to_pos}
-                onChange={handleChange}
-              >
+              <Select name="from_pos" value={formData.from_pos} onChange={handleChange}>
                 {locations.map((loc) => (
                   <MenuItem value={loc.position_code} key={loc.position_code}>
                     {loc.real_position}
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </StyledFormControl>
           </Grid>
 
-          <Grid item xs={3}>
-            <TextField
+          <Grid item xs={6} sm={6} md={2.5}>
+            <StyledFormControl fullWidth>
+              <InputLabel>To</InputLabel>
+              <Select name="to_pos" value={formData.to_pos} onChange={handleChange}>
+                {locations.map((loc) => (
+                  <MenuItem value={loc.position_code} key={loc.position_code}>
+                    {loc.real_position}
+                  </MenuItem>
+                ))}
+              </Select>
+            </StyledFormControl>
+          </Grid>
+
+          <Grid item xs={6} sm={6} md={2.5}>
+            <StyledTextField
               name="date_start"
               label="Departure Date"
               type="date"
@@ -191,8 +220,8 @@ export default function Search() {
             />
           </Grid>
 
-          <Grid item xs={2}>
-            <TextField
+          <Grid item xs={6} sm={6} md={2.5}>
+            <StyledTextField
               name="passenger_seat_count"
               label="Passengers"
               type="number"
@@ -203,8 +232,8 @@ export default function Search() {
             />
           </Grid>
 
-          <Grid item xs={1}>
-            <Button onClick={searchFlight} variant="contained" color="primary">
+          <Grid item xs={12} sm={12} md={1}>
+            <Button onClick={searchFlight} variant="contained" sx={{backgroundColor: "#159F91ff", marginTop: 1}}>
               Search
             </Button>
           </Grid>
@@ -216,26 +245,7 @@ export default function Search() {
       </Container>
 
       {/* Flight Results Table */}
-      {isShown && (
-        <FlightResults
-          flightList={flightList}
-          onBookFlight={handleBookFlight}
-        />
-      )}
-      <Snackbar
-      open={openSnackbar}
-      autoHideDuration={4000}
-      onClose={() => setOpenSnackbar(false)}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-    >
-      <Alert
-        onClose={() => setOpenSnackbar(false)}
-        severity={snackbarSeverity}
-        sx={{ width: "100%" }}
-      >
-        {snackbarMessage}
-      </Alert>
-    </Snackbar>
+      {isShown && <FlightResults flightList={flightList} onBookFlight={handleBookFlight} />}
     </Box>
   );
 }
