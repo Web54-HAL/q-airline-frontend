@@ -78,7 +78,7 @@ export default function AddFlight() {
   // Lấy danh sách chuyến bay khi load trang
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    
+
     if (token) {
       axios
         .get("http://localhost:3000/flights", {
@@ -110,37 +110,37 @@ export default function AddFlight() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const token = localStorage.getItem("access_token");
     if (!token) {
       setSnackbarMessage("Authentication token is missing. Please log in.");
       setOpenSnackbar(true);
       return;
     }
-  
+
     const now = new Date();
     const inputTime = new Date(formData.time_start);
-  
+
     if (inputTime <= now) {
       setSnackbarMessage("Departure time must be in the future.");
       setOpenSnackbar(true);
       return;
     }
-  
+
     const duration = parseInt(formData.duration_minute, 10);
     if (!Number.isInteger(duration) || duration <= 0) {
       setSnackbarMessage("Duration must be a positive integer.");
       setOpenSnackbar(true);
       return;
     }
-  
+
     const totalPassengers = parseInt(formData.total_passengers, 10);
     if (!Number.isInteger(totalPassengers) || totalPassengers <= 0) {
       setSnackbarMessage("Total passengers must be a positive integer.");
       setOpenSnackbar(true);
       return;
     }
-  
+
     if (
       !formData.flight_id.trim() ||
       !formData.plane_id.trim() ||
@@ -153,18 +153,18 @@ export default function AddFlight() {
       setOpenSnackbar(true);
       return;
     }
-  
+
     if (flights.some((flight) => flight.flight_id === formData.flight_id)) {
       setSnackbarMessage("Flight ID already exists. Please use a unique ID.");
       setOpenSnackbar(true);
       return;
     }
-  
+
     try {
       const response = await axios.post("http://localhost:3000/flights", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       setFlights((prevFlights) => [...prevFlights, response.data]);
       setFormData({
         flight_id: "",
@@ -175,8 +175,9 @@ export default function AddFlight() {
         duration_minute: "",
         total_passengers: "",
       });
-  
+
       setSnackbarMessage("Flight added successfully!");
+      setSnackbarSeverity("success");
       setOpenSnackbar(true);
     } catch (error) {
       console.error("Error adding flight:", error.response?.data || error.message);
@@ -187,8 +188,8 @@ export default function AddFlight() {
       setSnackbarSeverity("error"); // Đặt màu đỏ cho Snackbar khi lỗi
     }
   };
-  
-  
+
+
 
   const handleEditClick = (flight) => {
     setEditingFlight(flight);
@@ -201,24 +202,24 @@ export default function AddFlight() {
       setError("New start time cannot be earlier than the current time.");
       return;
     }
-  
+
     const token = localStorage.getItem("access_token");
-  
+
     try {
-      
+
       const updatedField = { time_start: newTimeStart };
-  
+
       await axios.patch(
         `http://localhost:3000/flights/${editingFlight.flight_id}`,
-        updatedField, 
+        updatedField,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-  
-      
+
+
       setFlights((prevFlights) =>
         prevFlights.map((flight) =>
           flight.flight_id === editingFlight.flight_id
@@ -226,25 +227,44 @@ export default function AddFlight() {
             : flight
         )
       );
-  
       setSnackbarMessage("Flight updated successfully!");
+      setSnackbarSeverity("success"); // Set to success
       setOpenSnackbar(true);
-      setEditingFlight(null); 
+      setEditingFlight(null);
     } catch (error) {
       console.error("Error updating the flight:", error);
+      setSnackbarSeverity("error"); // Đặt màu đỏ cho Snackbar khi lỗi
       setError("Failed to update the flight. Please try again.");
     }
   };
-  
+
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  function formatDateWith12Hour(dateString) {
+    const date = new Date(dateString);
+
+    // Lấy ngày theo định dạng YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+
+    // Định dạng giờ 12 giờ với AM/PM
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    };
+    const formattedTime = date.toLocaleString('en-US', options);
+
+    // Kết hợp ngày và giờ
+    return `${formattedDate} ${formattedTime}`;
   }
 
   return (
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ position: "relative", width: "100%", height: "400px" }}
+      sx={{ position: 'relative', width: "100%", height: "400px" }}
     >
       <Container
         sx={{
@@ -386,10 +406,8 @@ export default function AddFlight() {
         )}
       </Container>
 
-      <Container>
-        <Typography variant="h5" sx={{ mt: 5, mb: 2 }}>
-          Flight Information
-        </Typography>
+      <Container sx={{ mt: 5, paddingBottom: 5 }}>
+        <h1>Flight Information</h1>
         <TableContainer
           component={Paper}
           sx={{
@@ -417,7 +435,7 @@ export default function AddFlight() {
                   <StyledTableCell>{flight.plane_id}</StyledTableCell>
                   <StyledTableCell>{flight.from_pos}</StyledTableCell>
                   <StyledTableCell>{flight.to_pos}</StyledTableCell>
-                  <StyledTableCell>{flight.time_start}</StyledTableCell>
+                  <StyledTableCell>{formatDateWith12Hour(flight.time_start)}</StyledTableCell>
                   <StyledTableCell>{flight.total_passengers}</StyledTableCell>
                   <StyledTableCell>{flight.duration_minute}</StyledTableCell>
                   <StyledTableCell>
@@ -480,23 +498,18 @@ export default function AddFlight() {
       </Dialog>
 
       <Snackbar
-  open={openSnackbar}
-  autoHideDuration={3000}
-  onClose={() => setOpenSnackbar(false)}
-  anchorOrigin={{
-    vertical: "bottom",
-    horizontal: "left",
-  }}
->
-  <Alert
-    onClose={() => setOpenSnackbar(false)}
-    severity={snackbarSeverity}
-    sx={{ width: "100%" }}
-  >
-    {snackbarMessage}
-  </Alert>
-</Snackbar>
-
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

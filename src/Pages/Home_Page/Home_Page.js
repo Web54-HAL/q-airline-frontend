@@ -1,8 +1,8 @@
 import { Box, Container, Grid, Typography, Button, TextField, Avatar } from '@mui/material';
 import FlightIcon from '@mui/icons-material/FlightOutlined';
-import Image1 from './air1.jpeg';
-import Image2 from './air2.jpeg';
-import Image3 from './air3.jpeg';
+import Image1 from './airline5.jpg';
+import Image2 from './air4.jpg';
+import Image3 from './air5.jpg';
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 
@@ -62,10 +62,10 @@ function TravelLayout() {
             justifyContent: 'center', // Căn giữa theo chiều dọc
             alignItems: 'center'
           }}>
-            <Typography variant="h3" sx={{ fontWeight: 'bold', fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }}>Explore</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', fontSize: '3rem', color: '#C3FEFC', fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>the world</Typography>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', fontSize: { xs: '2.5rem', sm: '2.5rem', md: '3rem' } }}>Explore</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', fontSize: '3rem', color: '#C3FEFC', fontSize: { xs: '3rem', sm: '3rem', md: '3.5rem' } }}>the world</Typography>
             <br />
-            <Typography variant="h5" sx={{ fontWeight: 400, marginBottom: '20px', fontSize: { xs: '1rem', sm: '1.2rem', md: '1.5rem' } }}>
+            <Typography variant="h5" sx={{ fontWeight: 400, marginBottom: '20px', fontSize: { xs: '1.3rem', sm: '1.3rem', md: '1.5rem' } }}>
               Your Journey - Our Priority!
             </Typography>
             <Button variant="contained"

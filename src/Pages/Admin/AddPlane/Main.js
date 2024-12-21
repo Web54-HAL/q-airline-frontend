@@ -339,7 +339,7 @@ const [dialogData, setDialogData] = useState({
         </div>
       </Container>
 
-      <Container sx={{ mt: 5 }}>
+      <Container sx={{ mt: 5, paddingBottom: 5 }}>
         <h1>Planes Information</h1>
         <TableContainer
           component={Paper}
@@ -348,7 +348,7 @@ const [dialogData, setDialogData] = useState({
             overflow: 'auto', 
           }}
         >
-          <Table>
+          <Table stickyHeader>
             <TableHead>
               <TableRow>
                 <StyledTableCell>ID</StyledTableCell>
@@ -429,7 +429,7 @@ const [dialogData, setDialogData] = useState({
         autoHideDuration={3000} 
         onClose={() => setOpenSnackbar(false)} 
         anchorOrigin={{
-          vertical: 'bottem',
+          vertical: 'bottom',
           horizontal: 'left',
         }}
       >

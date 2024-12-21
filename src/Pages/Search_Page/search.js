@@ -12,13 +12,14 @@ import {
   FormControl,
   InputLabel,
   styled,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Image from "./searchbg.jpg";
 import FlightResults from "./flight";
-
 export default function Search() {
   const [formData, setFormData] = useState({
     from_pos: "",
@@ -30,28 +31,21 @@ export default function Search() {
   const [locations, setLocations] = useState([]);
   const [flightList, setFlightList] = useState([]);
   const [isShown, setIsShown] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
   const [fullInformation, setFullInformation] = useState("");
-
   const token = localStorage.getItem("access_token");
   const navigate = useNavigate();
-
   useEffect(() => {
-    const savedFlightList = sessionStorage.getItem("flightList");
-  const savedFormData = sessionStorage.getItem("formData");
-
-  if (savedFlightList) {
-    setFlightList(JSON.parse(savedFlightList));
-    setIsShown(true); 
-  }
-  if (savedFormData) {
-    setFormData(JSON.parse(savedFormData));
-  }
     const fetchLocations = async () => {
       try {
         const response = await axios.get("http://localhost:3000/position-map");
         setLocations(response.data);
       } catch (error) {
-        console.error("Error fetching locations:", error);
+        setSnackbarMessage("Failed to load locations.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
         setFullInformation("Failed to load locations.");
       }
     };
@@ -67,8 +61,15 @@ export default function Search() {
   };
 
   const searchFlight = async () => {
-    if (!formData.from_pos || !formData.to_pos || !formData.date_start || !formData.passenger_seat_count) {
-      setFullInformation("*All fields are required.");
+    if (
+      !formData.from_pos ||
+      !formData.to_pos ||
+      !formData.date_start ||
+      !formData.passenger_seat_count
+    ) {
+      setSnackbarMessage("*All fields are required.");
+      setSnackbarSeverity("warning");
+      setSnackbarOpen(true);
       return;
     }
 
@@ -78,45 +79,32 @@ export default function Search() {
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      if (response.data.length > 0) {
+      //console.log(response);
+      if (response.data) {
         setFlightList(response.data);
         setIsShown(true);
-      } else {
-        setFlightList([]);
-        setFullInformation("No flights found.");
       }
     } catch (error) {
-      console.error("Error searching flights:", error);
-      setFullInformation("Failed to search flights.");
+      console.log(error);
+      setFlightList([]);
+        setIsShown(false);
+      setSnackbarMessage("No Flight Found");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
-
-  function formatDateWith12Hour(dateString) {
-    const date = new Date(dateString);
-  
-    // Lấy ngày theo định dạng YYYY-MM-DD
-    const formattedDate = date.toISOString().split('T')[0];
-  
-    // Định dạng giờ 12 giờ với AM/PM
-    const options = {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    };
-    const formattedTime = date.toLocaleString('en-US', options);
-  
-    // Kết hợp ngày và giờ
-    return `${formattedDate} ${formattedTime}`;
-  }
-
-  const handleBookFlight = (row) => {
-    const bookingDate = new Date().toISOString();
-    sessionStorage.setItem("flightList", JSON.stringify(flightList));
-    sessionStorage.setItem("formData", JSON.stringify(formData));
-    navigate(`/user/booking/${row.flight_id}/${row.plane_id}/${row.from_pos}/${row.to_pos}/${row.time_start}/${row.duration_minute}/${bookingDate}`);
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
+  const handleBookFlight = (row) => {
+  
+    const bookingDate = new Date().toISOString();
+    navigate(
+      `/user/booking/${row.flight_id}/${row.plane_id}/${row.from_pos}/${row.to_pos}/${row.time_start}/${row.duration_minute}/${bookingDate}`
+    );
+  };
+  
   const StyledTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
       borderBottom: "2px solid var(--primary-color)",
@@ -148,7 +136,6 @@ export default function Search() {
       },
     },
   }));
-
 
   return (
     <Box
@@ -185,7 +172,11 @@ export default function Search() {
           <Grid item xs={6} sm={6} md={2.5}>
             <StyledFormControl fullWidth>
               <InputLabel>From</InputLabel>
-              <Select name="from_pos" value={formData.from_pos} onChange={handleChange}>
+              <Select
+                name="from_pos"
+                value={formData.from_pos}
+                onChange={handleChange}
+              >
                 {locations.map((loc) => (
                   <MenuItem value={loc.position_code} key={loc.position_code}>
                     {loc.real_position}
@@ -198,7 +189,11 @@ export default function Search() {
           <Grid item xs={6} sm={6} md={2.5}>
             <StyledFormControl fullWidth>
               <InputLabel>To</InputLabel>
-              <Select name="to_pos" value={formData.to_pos} onChange={handleChange}>
+              <Select
+                name="to_pos"
+                value={formData.to_pos}
+                onChange={handleChange}
+              >
                 {locations.map((loc) => (
                   <MenuItem value={loc.position_code} key={loc.position_code}>
                     {loc.real_position}
@@ -233,7 +228,11 @@ export default function Search() {
           </Grid>
 
           <Grid item xs={12} sm={12} md={1}>
-            <Button onClick={searchFlight} variant="contained" sx={{backgroundColor: "#159F91ff", marginTop: 1}}>
+            <Button
+              onClick={searchFlight}
+              variant="contained"
+              sx={{ backgroundColor: "#159F91ff", marginTop: 1 }}
+            >
               Search
             </Button>
           </Grid>
@@ -245,7 +244,26 @@ export default function Search() {
       </Container>
 
       {/* Flight Results Table */}
-      {isShown && <FlightResults flightList={flightList} onBookFlight={handleBookFlight} />}
+      {isShown && (
+        <FlightResults
+          flightList={flightList}
+          onBookFlight={handleBookFlight}
+        />
+      )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

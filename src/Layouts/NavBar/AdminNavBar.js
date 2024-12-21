@@ -42,8 +42,10 @@ export default function Navbar() {
 
   const handleLogout = () => {
     setOpenDialog(false);
-    localStorage.removeItem("jwtToken");
-    navigate("/");
+    localStorage.removeItem("access_token");
+    setTimeout(() => {
+      navigate("/");
+    }, 0); 
   };
 
   return (
