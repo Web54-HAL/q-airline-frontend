@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import FlightIcon from '@mui/icons-material/FlightOutlined';
 import axios from 'axios';
-import Image from './backgroundadmin.jpg';
+import Image from './AboutUs03.jpg';
 import styled from 'styled-components';
 import { tableCellClasses } from '@mui/material';
 import Dialog from "@mui/material/Dialog";

@@ -21,6 +21,7 @@ import {
 import { styled } from "@mui/system";
 import axios from "axios";
 import "../../../color.css";
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: "bold",
   backgroundColor: "#159F91",
@@ -44,11 +45,9 @@ const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
 export default function PostPromotions() {
   const [promotions, setPromotions] = useState([]);
   const [newPromotion, setNewPromotion] = useState({
-    promotion_id: "",
     title: "",
     markdown_content: "",
     preview_image_url: "",
-    created_at: "",
     start_date: "",
     end_date: "",
   });
@@ -89,13 +88,7 @@ export default function PostPromotions() {
     const { title, markdown_content, preview_image_url, start_date, end_date } =
       newPromotion;
 
-    if (
-      !title ||
-      !markdown_content ||
-      !preview_image_url ||
-      !start_date ||
-      !end_date
-    ) {
+    if (!title || !markdown_content || !start_date || !end_date) {
       setSnackbarMessage("Please fill in all the required information.");
 
       setSnackbarSeverity("warning");
@@ -104,28 +97,34 @@ export default function PostPromotions() {
     }
 
     try {
-      const newPromotionData = {
-        ...newPromotion,
-        created_at: new Date().toISOString(), 
-      };
+      const token = localStorage.getItem("access_token");
+      console.log("Payload:", newPromotion);
 
       const response = await axios.post(
         "http://localhost:3000/promotions",
-        newPromotionData,
+        newPromotion,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`, 
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      setPromotions((prev) => [...prev, response.data]);
+      const createdPromotion = {
+        promotion_id: response.data.promotion_id,
+        title: response.data.title,
+        markdown_content: response.data.markdown_content,
+        preview_image_url: response.data.preview_image_url,
+        created_at: response.data.created_at,
+        start_date: response.data.start_date,
+        end_date: response.data.end_date,
+      };
+
+      setPromotions((prev) => [...prev, createdPromotion]);
       setNewPromotion({
-        promotion_id: "",
         title: "",
         markdown_content: "",
         preview_image_url: "",
-        created_at: "",
         start_date: "",
         end_date: "",
       });
@@ -158,7 +157,11 @@ export default function PostPromotions() {
       </Typography>
       <Button
         variant="contained"
-        sx={{ marginBottom: 2, backgroundColor: "var(--primary-color)", float: "right" }}
+        sx={{
+          marginBottom: 2,
+          backgroundColor: "var(--primary-color)",
+          float: "right",
+        }}
         onClick={() => setOpenDialog(true)}
       >
         Add New Promotion
@@ -220,11 +223,7 @@ export default function PostPromotions() {
                 </TableCell>
                 <TableCell>{promotion.start_date || "N/A"}</TableCell>
                 <TableCell>{promotion.end_date || "N/A"}</TableCell>
-                <TableCell>
-                  {promotion.created_at
-                    ? new Date(promotion.created_at).toLocaleString()
-                    : "N/A"}
-                </TableCell>
+                <TableCell>{promotion.created_at || "N/A"}</TableCell>
               </StyledTableRow>
             ))}
           </TableBody>

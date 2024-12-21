@@ -24,14 +24,6 @@ export default function Navbar() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
-  const sliderRef = useRef(null);
-  const handleScrollToSlider = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <AppBar
       position="sticky"
@@ -80,12 +72,6 @@ export default function Navbar() {
             onClick={() => navigate("/search")}
           >
             Search
-          </Button>
-          <Button
-            sx={{ color: "#ffffff", fontWeight: "bold" }}
-            onClick={handleScrollToSlider}
-          >
-            New Posts
           </Button>
         </Box>
 
