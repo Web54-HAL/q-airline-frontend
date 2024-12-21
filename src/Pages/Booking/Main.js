@@ -147,7 +147,6 @@ const Booking = () => {
         console.log(error.response.data);
       }
       console.error("Booking failed:", error);
-      //setSnackbarMessage("Booking failed, please try again later.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }

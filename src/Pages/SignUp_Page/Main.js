@@ -16,13 +16,20 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useState } from "react";
 import Axios from "axios";
-import Image from "./6.jpg";
+import Image from "./signupbg3.jpg";
 import { useNavigate } from "react-router-dom";
 import "../../color.css";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 const theme = createTheme();
 
 export default function SignUp() {
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  
+  const [openSnackbar, setOpenSnackbar] = useState(false); // Trạng thái hiển thị Snackbar
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Nội dung thông báo
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Loại thông báo (success, error, etc.)
+  
   const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -42,7 +49,8 @@ export default function SignUp() {
   const [confirm_password, setConfirmPassword] = useState("");
   const [fullInfromation, setFullInfromation] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
-  const addUser = () => {
+  const addUser = async () => {
+    // Kiểm tra nếu có trường nào bị bỏ trống
     if (
       !firstName ||
       !lastName ||
@@ -54,13 +62,46 @@ export default function SignUp() {
       !confirm_password
     ) {
       setFullInfromation("*All fields are required.");
+      setSnackbarMessage("*All fields are required.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
       setCheckPassword("");
-    } else if (password != confirm_password) {
-      setCheckPassword("*Password and confirm password does not match.");
+      return;
+    }
+  
+    // Kiểm tra định dạng số điện thoại
+    if (!/^\+84[0-9]{9,10}$/.test(phoneNumber)) {
       setFullInfromation("");
-    } else {
-      const token = localStorage.getItem("access_token");
-      Axios.post("http://localhost:3000/auth/register", {
+      setSnackbarMessage("*Phone number must start with +84 and have 10-11 digits.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+      setCheckPassword("");
+      return;
+    }
+  
+    // Kiểm tra định dạng email
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setFullInfromation("");
+      setSnackbarMessage("*Invalid email format.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+      setCheckPassword("");
+      return;
+    }
+  
+    // Kiểm tra mật khẩu và xác nhận mật khẩu
+    if (password !== confirm_password) {
+      setFullInfromation("");
+      setSnackbarMessage("*Password and confirm password do not match.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+      setCheckPassword("");
+      return;
+    }
+  
+    // Gửi yêu cầu đăng ký
+    try {
+      const response = await Axios.post("http://localhost:3000/auth/register", {
         family_name: firstName,
         given_name: lastName,
         date_of_birth: birthday,
@@ -68,28 +109,39 @@ export default function SignUp() {
         phone_num: phoneNumber,
         email: email,
         password: password,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            setOpenSnackbar(true); 
-            setTimeout(() => {
-              navigate("/SignIn"); 
-            }, 2000);
-          }
-        })
-        .catch((error) => {
-          if (error.response) {
-            setCheckPassword("The email exists");
-          } else {
-            console.error("Lỗi kết nối:", error.message);
-          }
-        });
+      });
+  
+      // Nếu đăng ký thành công
+      if (response.status === 201) {
+        setFullInfromation("");
+        setCheckPassword("");
+        setSnackbarMessage("Registration successful! Redirecting to login...");
+        setSnackbarSeverity("success");
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          navigate("/SignIn");
+        }, 3000);
+      }
+    } catch (error) {
+      // Nếu có lỗi từ server
+      if (error.response && error.response.data && error.response.data.message) {
+        setSnackbarMessage(`*Error: ${error.response.data.message}`);
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
+      } else {
+        // Lỗi kết nối
+        setSnackbarMessage("*Unable to connect to the server. Please try again.");
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
+      }
+      setFullInfromation("");
+      setCheckPassword("");
     }
   };
+  
+  
+  
+
 
   return (
     <>
@@ -130,7 +182,7 @@ export default function SignUp() {
               backdropFilter: "blur(15px)",
               borderRadius: "12px",
               padding: "20px 10px",
-              margin: "90px 0px",
+              margin: "150px 0px",
               mt : "40px",
               right: "15px",
               boxShadow: "0px 6px 25px rgba(0, 0, 0, 0.3)",
@@ -172,7 +224,7 @@ export default function SignUp() {
                 sx={{ mt: 1 }}
               >
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={6} sm={6}>
                     <TextField
                       onChange={(event) => {
                         setFirstName(event.target.value);
@@ -186,7 +238,7 @@ export default function SignUp() {
                       autoFocus
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={6} sm={6}>
                     <TextField
                       onChange={(event) => {
                         setLastName(event.target.value);
@@ -199,7 +251,7 @@ export default function SignUp() {
                       autoComplete="family-name"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={6} sm={6}>
                     <TextField
                       onChange={(event) => {
                         setBirthday(event.target.value);
@@ -217,7 +269,7 @@ export default function SignUp() {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={6} sm={6}>
                     <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">
@@ -231,11 +283,11 @@ export default function SignUp() {
                           label="Gender"
                           onChange={(event) => {
                             setGender(event.target.value);
+                            console.log("Selected Gender:", event.target.value); 
                           }}
                         >
-                          <MenuItem value={10}>Male</MenuItem>
-                          <MenuItem value={20}>Female</MenuItem>
-                          <MenuItem value={30}>Custom</MenuItem>
+                          <MenuItem value={"male"}>Male</MenuItem>
+                          <MenuItem value={"female"}>Female</MenuItem>
                         </Select>
                       </FormControl>
                     </Box>
@@ -295,28 +347,32 @@ export default function SignUp() {
                       id="confirm_password"
                     />
                   </Grid>
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox value="allowExtraEmails" color="primary" />
-                      }
-                      label={
-                        <Typography variant="body2" fontSize="14">
-                          I confirm....
-                        </Typography>
-                      }
-                    />
-                  </Grid>
+                 
                 </Grid>
-                <Button
-                  onClick={addUser}
-                  type="button"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 2, bgcolor: "var(--primary-color)" }}
-                >
-                  Sign Up
-                </Button>
+                <Box
+  sx={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    mt: 4,
+  }}
+>
+  <Button
+    onClick={addUser}
+    type="button"
+    variant="contained"
+    sx={{
+      bgcolor: "var(--primary-color)",
+      width: "50%",
+      minWidth: "180px",
+      color: "white",
+      "&:hover": { bgcolor: "var(--primary-color-dark)" },
+    }}
+  >
+    Sign Up
+  </Button>
+</Box>
+
 
                 <div style={{ color: "red" }}>{fullInfromation}</div>
                 <div style={{ color: "red" }}>{checkPassword}</div>
@@ -325,6 +381,17 @@ export default function SignUp() {
           </Grid>
         </Grid>
       </ThemeProvider>
+      <Snackbar
+  open={openSnackbar}
+  autoHideDuration={3000} // Tự động đóng sau 3 giây
+  onClose={() => setOpenSnackbar(false)} // Đóng snackbar khi kết thúc
+  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+>
+  <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+    {snackbarMessage}
+  </Alert>
+</Snackbar>
+
     </>
   );
 }

@@ -18,7 +18,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Image from "./searchbg.jpg";
+import Image from "./searchbg4.jpg";
 import FlightResults from "./flight";
 export default function Search() {
   const [formData, setFormData] = useState({
@@ -79,8 +79,9 @@ export default function Search() {
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      //console.log(response);
+      console.log(response);
       if (response.data) {
+        // console.log(response.data);
         setFlightList(response.data);
         setIsShown(true);
       }

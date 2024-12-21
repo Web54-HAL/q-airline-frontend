@@ -13,11 +13,10 @@ import Axios from "axios";
 import { useState, useEffect } from "react";
 import FlightIcon from "@mui/icons-material/Flight";
 import { useNavigate } from "react-router-dom";
-import Image from "../SignUp_Page/6.jpg";
+import Image from "../SignUp_Page/signupbg3.jpg";
 import "../../color.css";
 import "@fontsource/poppins"; // Import toàn bộ font
 import { jwtDecode } from "jwt-decode";
-
 
 const theme = createTheme();
 
@@ -45,33 +44,30 @@ export default function SignInSide() {
       setWrong("Please fill in both username and password.");
       return;
     }
-  
+
     try {
       const response = await Axios.post("http://localhost:3000/auth/login", {
         username: name,
         password: password,
       });
-  
+
       if (response.status === 200) {
-      
         const token = response.data.access_token;
         localStorage.setItem("access_token", token);
-  
-       
+
         try {
-          const decodedToken = jwtDecode(token); 
+          const decodedToken = jwtDecode(token);
           console.log("Decoded Token:", decodedToken);
-  
-          
+
           if (decodedToken.role === "Admin") {
-            navigate("/admin"); 
+            navigate("/admin");
           } else {
-            navigate("/user"); 
+            navigate("/user");
           }
         } catch (decodeError) {
           console.error("Error decoding token:", decodeError);
         }
-  
+
         // Lưu thông tin nếu Remember Me được chọn
         if (rememberMe) {
           localStorage.setItem("saved_user", name);
@@ -85,7 +81,9 @@ export default function SignInSide() {
       }
     } catch (error) {
       if (error.response) {
-        setWrong(error.response.data.message || "Invalid username or password.");
+        setWrong(
+          error.response.data.message || "Invalid username or password."
+        );
       } else if (error.request) {
         setWrong("Unable to connect to the server. Please try again later.");
       } else {
@@ -94,8 +92,7 @@ export default function SignInSide() {
       console.error("Error during login:", error);
     }
   };
-  
-  
+
   return (
     <ThemeProvider theme={theme}>
       <Grid
@@ -112,26 +109,21 @@ export default function SignInSide() {
         }}
       >
         <CssBaseline />
-        <Grid
-  item
-  xs={1}
-  sm={7}>
-  
-</Grid>
+        <Grid item xs={1} sm={7}></Grid>
 
         <Grid
           item
           xs={11}
           sm={5}
           sx={{
-            position : "relative",
-              backgroundColor: "rgba(255, 255, 255, 0.6)",
-              backdropFilter: "blur(15px)",
-              borderRadius: "12px",
-              padding: "20px 10px",
-              margin: "20px 0px",
-              right: "15px",
-              boxShadow: "0px 6px 25px rgba(0, 0, 0, 0.3)",
+            position: "relative",
+            backgroundColor: "rgba(255, 255, 255, 0.6)",
+            backdropFilter: "blur(15px)",
+            borderRadius: "12px",
+            padding: "20px 10px",
+            margin: "20px 0px",
+            right: "15px",
+            boxShadow: "0px 6px 25px rgba(0, 0, 0, 0.3)",
           }}
         >
           <Box
@@ -153,7 +145,11 @@ export default function SignInSide() {
               <Avatar sx={{ m: 1, bgcolor: "var(--primary-color)" }}>
                 <FlightIcon sx={{ color: "white" }} />
               </Avatar>
-              <Typography component="h1" variant="h5" sx={{ color: "var(--primary-color)", fontWeight:"bold"}}>
+              <Typography
+                component="h1"
+                variant="h5"
+                sx={{ color: "var(--primary-color)", fontWeight: "bold" }}
+              >
                 Sign in
               </Typography>
             </Typography>
@@ -196,20 +192,31 @@ export default function SignInSide() {
                 }
                 label={<Typography>Remember me</Typography>}
               />
-              <Button
-                onClick={checkUser}
-                type="button"
-                fullWidth
-                variant="contained"
-                
+              <Box
                 sx={{
-                  mt: 3,
-                  mb: 2,
-                  bgcolor: "var(--primary-color)" 
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  mt: 4,
                 }}
               >
-                Sign In
-              </Button>
+                <Button
+                  onClick={checkUser}
+                  type="button"
+                  variant="contained"
+                  sx={{
+                    mb: "20px",
+                    bgcolor: "var(--primary-color)",
+                    width:"50%",
+                    minWidth: "180px",
+                    color: "white",
+                    "&:hover": { bgcolor: "var(--primary-color-dark)" },
+                  }}
+                >
+                  Sign In
+                </Button>
+              </Box>
+
               <Typography sx={{ textAlign: "center" }}>{wrong}</Typography>
             </Box>
           </Box>

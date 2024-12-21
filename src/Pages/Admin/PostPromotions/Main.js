@@ -275,7 +275,6 @@ export default function PostPromotions() {
               value={newPromotion.preview_image_url}
               onChange={handleInputChange}
               fullWidth
-              required
               placeholder="Enter image URL"
             />
             <TextField

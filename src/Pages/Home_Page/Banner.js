@@ -7,7 +7,7 @@ import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
-import Image from "../SignUp_Page/1.jpg";
+import Image from "../Home_Page/air4.jpg";
 import "../../color.css";
 export default function Slider() {
   const [slides, setSlides] = useState([]);
