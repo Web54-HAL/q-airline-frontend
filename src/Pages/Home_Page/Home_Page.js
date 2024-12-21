@@ -51,15 +51,13 @@ function TravelLayout() {
           height: '120%',
           marginTop: 2,
           borderRadius: 5,
-          // marginBottom: '150px',
         }}
       >
-        {/* Hero Section */}
         <Box sx={{ position: 'relative', height: '60vh', backgroundImage: `url(${images[currentIndex]})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 5, }}>
           <Box sx={{
             position: 'absolute', color: '#fff', backgroundColor: 'rgba(0,0,0,.3)', height: '100%', width: { xs: '100%', sm: '50%', md: '35%' }, borderRadius: 5, display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center', // Căn giữa theo chiều dọc
+            justifyContent: 'center', 
             alignItems: 'center'
           }}>
             <Typography variant="h3" sx={{ fontWeight: 'bold', fontSize: { xs: '2.5rem', sm: '2.5rem', md: '3rem' } }}>Explore</Typography>

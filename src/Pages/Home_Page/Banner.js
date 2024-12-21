@@ -46,7 +46,7 @@ export default function Slider() {
       opacity: 0.7,
       transition: "all 0.3s ease",
       padding: "15px",
-      borderRadius: "50%", // Điều chỉnh bo tròn
+      borderRadius: "50%",
     },
     "& .swiper-button-next:hover, .swiper-button-prev:hover": {
       opacity: 1,

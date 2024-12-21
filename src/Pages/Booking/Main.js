@@ -82,12 +82,12 @@ const Booking = () => {
     infantCount: 0,
   });
 
-  // Snackbar for notifications
+  
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  // Dialog state
+ 
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleInputChange = (e) => {
@@ -290,7 +290,6 @@ const Booking = () => {
           </Grid>
         </Box>
 
-        {/* Submit Button */}
         <Box sx={{ textAlign: "center" }}>
           <Button
             variant="contained"

@@ -185,7 +185,7 @@ export default function AddFlight() {
         error.response?.data?.message || "Failed to add flight. Please try again."
       );
       setOpenSnackbar(true);
-      setSnackbarSeverity("error"); // Đặt màu đỏ cho Snackbar khi lỗi
+      setSnackbarSeverity("error"); 
     }
   };
 
@@ -228,12 +228,12 @@ export default function AddFlight() {
         )
       );
       setSnackbarMessage("Flight updated successfully!");
-      setSnackbarSeverity("success"); // Set to success
+      setSnackbarSeverity("success"); 
       setOpenSnackbar(true);
       setEditingFlight(null);
     } catch (error) {
       console.error("Error updating the flight:", error);
-      setSnackbarSeverity("error"); // Đặt màu đỏ cho Snackbar khi lỗi
+      setSnackbarSeverity("error");
       setError("Failed to update the flight. Please try again.");
     }
   };

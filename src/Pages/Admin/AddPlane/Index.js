@@ -11,11 +11,11 @@ export const useAddPlaneLogic = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [editData, setEditData] = useState(null); // State cho chế độ chỉnh sửa
+  const [editData, setEditData] = useState(null); 
 
   const token = localStorage.getItem("access_token");
 
-  // Xử lý thay đổi input
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -80,7 +80,7 @@ export const useAddPlaneLogic = () => {
     }
   };
 
-  // Thông báo lỗi hoặc thành công
+  
   const handleError = (message) => {
     setSnackbarMessage(message);
     setSnackbarSeverity("error");
