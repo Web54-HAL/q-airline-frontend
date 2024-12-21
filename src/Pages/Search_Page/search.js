@@ -98,6 +98,13 @@ export default function Search() {
   };
 
   const handleBookFlight = (row) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setSnackbarMessage("You need to login first");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
   
     const bookingDate = new Date().toISOString();
     navigate(

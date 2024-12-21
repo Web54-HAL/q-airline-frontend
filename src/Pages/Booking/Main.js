@@ -1,4 +1,4 @@
-import React, { useState, } from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Box,
@@ -38,49 +38,44 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 let decodedToken = "";
-const token = localStorage.getItem("access_token" );
-      if (token) {
-        try {
-          decodedToken = jwtDecode(token);
-          console.log(decodedToken);
-        } catch (error) {
-          console.error("Token decoding failed:", error.message);
-        }
-      } 
+const token = localStorage.getItem("access_token");
+if (token) {
+  try {
+    decodedToken = jwtDecode(token);
+    console.log(decodedToken);
+  } catch (error) {
+    console.error("Token decoding failed:", error.message);
+  }
+}
 const Booking = () => {
   // Extract URL parameters
   const location = useLocation();
   const pathParts = location.pathname.split("/");
   const flight_id = pathParts[3] || ""; // "50"
-const plane_id = pathParts[4] || ""; // "10"
-const from_pos = pathParts[5] || ""; // "HAN"
-const to_pos = pathParts[6] || ""; // "SGN"
-const time_start = pathParts[7] || ""; // "2024-12-22T11:30:00+00:00"
-const duration_minute = pathParts[8] || ""; // "120"
-const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
+  const plane_id = pathParts[4] || ""; // "10"
+  const from_pos = pathParts[5] || ""; // "HAN"
+  const to_pos = pathParts[6] || ""; // "SGN"
+  const time_start = pathParts[7] || ""; // "2024-12-22T11:30:00+00:00"
+  const duration_minute = pathParts[8] || ""; // "120"
+  const booking_date = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
+  let customer_id = decodedToken.userId;
 
-
-  let customer_id = decodedToken.userId;;
- 
   function formatDateWith12Hour(dateString) {
     const date = new Date(dateString);
-  
-    // Lấy ngày theo định dạng YYYY-MM-DD
-    const formattedDate = date.toISOString().split('T')[0];
-  
-    // Định dạng giờ 12 giờ với AM/PM
+
+    const formattedDate = date.toISOString().split("T")[0];
+
     const options = {
-      hour: 'numeric',
-      minute: 'numeric',
+      hour: "numeric",
+      minute: "numeric",
       hour12: true,
     };
-    const formattedTime = date.toLocaleString('en-US', options);
-  
-    // Kết hợp ngày và giờ
+    const formattedTime = date.toLocaleString("en-US", options);
+
     return `${formattedDate} ${formattedTime}`;
   }
- 
+
   const [formData, setFormData] = useState({
     adultCount: 1,
     childCount: 0,
@@ -117,21 +112,15 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
   const handleConfirmBooking = async () => {
     setDialogOpen(false);
-  
+
     const bookingData = {
       flight_id,
-      from_pos,
-      to_pos,
-      time_start,
-      bookingDate,
-      duration_minute,
-      plane_id,
-      customer_id,
+      booking_date,
       adult_count: formData.adultCount,
       children_count: formData.childCount,
       infant_count: formData.infantCount,
     };
-  
+
     try {
       console.log(token);
       console.log(bookingData);
@@ -140,12 +129,12 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
         bookingData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+          withCredentials: true,
         }
-        
       );
-  
+
       if (response.status === 201) {
         console.log(response);
         setSnackbarMessage("Booking successful!");
@@ -156,20 +145,20 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
       if (error.response) {
         setSnackbarMessage(`Booking failed: ${error.response.data.message}`);
         console.log(error.response.data);
-      } 
+      }
       console.error("Booking failed:", error);
       //setSnackbarMessage("Booking failed, please try again later.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
-  
+
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Paper
         elevation={3}
         sx={{
-          mb : 5,
+          mb: 5,
           borderRadius: "12px",
           overflow: "hidden",
           p: 3,
@@ -207,7 +196,10 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
         {/* Flight Information */}
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2,  color : "var(--primary-color)"}}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", mb: 2, color: "var(--primary-color)" }}
+          >
             Flight Information
           </Typography>
           <Grid container spacing={2}>
@@ -227,13 +219,15 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography>
-                <strong>Departure Time:</strong> {formatDateWith12Hour(time_start)}
+                <strong>Departure Time:</strong>{" "}
+                {formatDateWith12Hour(time_start)}
               </Typography>
               <Typography>
                 <strong>Duration minutes:</strong> {duration_minute}
               </Typography>
               <Typography>
-                <strong>Booking Date:</strong> {formatDateWith12Hour(bookingDate)}
+                <strong>Booking Date:</strong>{" "}
+                {formatDateWith12Hour(booking_date)}
               </Typography>
             </Grid>
           </Grid>
@@ -241,7 +235,10 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
         {/* Customer Information */}
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, color : "var(--primary-color)"}}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", mb: 2, color: "var(--primary-color)" }}
+          >
             Customer Information
           </Typography>
           <Typography>
@@ -251,7 +248,10 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
 
         {/* Passenger Count */}
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, color : "var(--primary-color)"}}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", mb: 2, color: "var(--primary-color)" }}
+          >
             Passenger Count
           </Typography>
           <Grid container spacing={2}>
@@ -311,11 +311,17 @@ const bookingDate = pathParts[9] || ""; // "2024-12-18T10:03:20.497Z"
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Confirm Booking</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to confirm this booking?</Typography>
+          <Typography>
+            Are you sure you want to confirm this booking?
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose}>No</Button>
-          <Button onClick={handleConfirmBooking} variant="contained" color="primary">
+          <Button
+            onClick={handleConfirmBooking}
+            variant="contained"
+            color="primary"
+          >
             Yes
           </Button>
         </DialogActions>
